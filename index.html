@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>The Fat Turtle - Cafe</title>
+
+
+    <!-- Bootstrap 5 CSS -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- Our CSS -->
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ==================================================
+         HEADER / HERO
+         ================================================== -->
+
+    <header>
+
+        <!-- Header Image -->
+
+        <img
+            src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/TheFatTurtle.JPG"
+            alt="The Fat Turtle Cafe"
+            class="header-image"
+            style="max-width:100%;height:auto;">
+
+
+        <!-- Header Content -->
+
+        <div class="header-overlay">
+
+            <h1>The Fat Turtle</h1>
+
+
+            <!-- Navigation -->
+
+            <nav>
+
+                <a href="#menu">
+                    Menu
+                </a>
+
+                <a href="#orders">
+                    My Orders
+                </a>
+
+                <a href="#contact">
+                    Contact
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- ==================================================
+             LOGIN / SIGN UP BUTTONS
+             ================================================== -->
+
+        <div
+            class="auth-buttons"
+            id="authButtons">
+
+            <button
+                type="button"
+                class="login-button"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal">
+
+                Login
+
+            </button>
+
+
+            <button
+                type="button"
+                class="signup-button"
+                data-bs-toggle="modal"
+                data-bs-target="#signupModal">
+
+                Sign Up
+
+            </button>
+
+        </div>
+
+
+        <!-- ==================================================
+             LOGGED-IN USER
+             ================================================== -->
+
+        <div id="userAccount">
+
+            <span id="userWelcome"></span>
+
+
+            <button
+                type="button"
+                id="logoutButton"
+                onclick="logoutUser()">
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         MENU SECTION
+         ================================================== -->
+
+    <section id="menu">
+
+        <h2>Our Menu</h2>
+
+
+        <div id="menuItems">
+
+
+            <!-- Pizza -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Pizza.jpeg"
+                    alt="Margherita Pizza"
+                    class="food-image">
+                <h3>
+                    Margherita Pizza
+                </h3>
+
+                <p>
+                    ₹599
+                </p>
+
+                <button
+                    onclick="addOrder('Margherita Pizza')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Burger -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Burger.jpeg"
+                    alt="Veg Burger"
+                    class="food-image">
+                <h3>
+                    Veg Burger
+                </h3>
+
+                <p>
+                    ₹299
+                </p>
+
+                <button
+                    onclick="addOrder('Veg Burger')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+            <!-- French Fries -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Fries.jpeg"
+                    alt="French Fries"
+                    class="food-image">
+                <h3>
+                    French Fries
+                </h3>
+
+                <p>
+                    ₹249
+                </p>
+
+                <button
+                    onclick="addOrder('French Fries')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Sandwich -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Sandwich.jpeg"
+                    alt="Grilled Sandwich"
+                    class="food-image">
+                <h3>
+                    Grilled Sandwich
+                </h3>
+
+                <p>
+                    ₹279
+                </p>
+
+                <button
+                    onclick="addOrder('Grilled Sandwich')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Nachos -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Nachos.jpeg"
+                    alt="Cheese Nachos"
+                    class="food-image">
+
+                <h3>
+                    Cheese Nachos
+                </h3>
+
+                <p>
+                    ₹249
+                </p>
+
+                <button
+                    onclick="addOrder('Cheese Nachos')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Cold Coffee -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Coffee.jpeg"
+                    alt="Cold Coffee"
+                    class="food-image">
+                <h3>
+                    Cold Coffee
+                </h3>
+
+                <p>
+                    ₹199
+                </p>
+
+                <button
+                    onclick="addOrder('Cold Coffee')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Chocolate Shake -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Shake.jpeg"
+                    alt="Chocolate Shake"
+                    class="food-image">
+
+                <h3>
+                    Chocolate Shake
+                </h3>
+
+                <p>
+                    ₹229
+                </p>
+
+                <button
+                    onclick="addOrder('Chocolate Shake')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Cheesecake -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/cheesecake.jpeg"
+                    alt="Cheesecake"
+                    class="food-image">
+
+                <h3>
+                    Cheesecake
+                </h3>
+
+                <p>
+                    ₹199
+                </p>
+
+                <button
+                    onclick="addOrder('Cheesecake')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+
+            <!-- Brownie -->
+
+            <div
+                class="food-item"
+                draggable="true"
+                ondragstart="drag(event)">
+
+                <img
+                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/brownies.jpeg"
+                    alt="Chocolate Brownie"
+                    class="food-image">
+
+                <h3>
+                    Chocolate Brownie
+                </h3>
+
+                <p>
+                    ₹149
+                </p>
+
+                <button
+                    onclick="addOrder('Chocolate Brownie')">
+
+                    Add to Order
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         DRAG AND DROP AREA
+         ================================================== -->
+
+    <section>
+
+        <div
+            id="orderDropArea"
+            ondragover="allowDrop(event)"
+            ondrop="drop(event)">
+
+            Drag a food item here to add it to your order
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         ORDERS SECTION
+         ================================================== -->
+
+    <section id="orders">
+
+        <h2>
+            My Orders
+        </h2>
+
+
+        <ul id="orderList"></ul>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         LOCATION SECTION
+         ================================================== -->
+
+    <section id="location">
+
+        <h2>
+            Find Your Location
+        </h2>
+
+
+        <button
+            onclick="getLocation()">
+
+            Get My Location
+
+        </button>
+
+
+        <p id="locationResult"></p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         CONTACT SECTION
+         ================================================== -->
+
+    <section id="contact">
+
+        <h2>
+            Contact Us
+        </h2>
+
+
+        <p>
+            The Fat Turtle Cafe
+        </p>
+
+        <p>
+            Ahmedabad, Gujarat
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         SIGN UP MODAL
+         ================================================== -->
+
+    <div
+        class="modal fade"
+        id="signupModal"
+        tabindex="-1"
+        aria-labelledby="signupModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+
+                <!-- Modal Header -->
+
+                <div class="modal-header">
+
+                    <h5
+                        class="modal-title"
+                        id="signupModalLabel">
+
+                        The Fat Turtle - Sign Up
+
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    </button>
+
+                </div>
+
+
+                <!-- Modal Body -->
+
+                <div class="modal-body">
+
+                    <form id="signupForm">
+
+
+                        <!-- First Name -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="firstName"
+                                class="form-label">
+
+                                First Name
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="firstName"
+                                placeholder="Enter your first name"
+                                required>
+
+                        </div>
+
+
+                        <!-- Mobile Number -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="mobile"
+                                class="form-label">
+
+                                Mobile Number
+
+                            </label>
+
+
+                            <input
+                                type="tel"
+                                class="form-control"
+                                id="mobile"
+                                placeholder="Enter your mobile number"
+                                required>
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="email"
+                                class="form-label">
+
+                                Email ID
+
+                            </label>
+
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                placeholder="Enter your email"
+                                required>
+
+                        </div>
+
+
+                        <!-- Password -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="signupPassword"
+                                class="form-label">
+
+                                Password
+
+                            </label>
+
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="signupPassword"
+                                placeholder="Create a password"
+                                required>
+
+                        </div>
+
+
+                        <!-- Address -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="address"
+                                class="form-label">
+
+                                Address
+
+                            </label>
+
+
+                            <textarea
+                                class="form-control"
+                                id="address"
+                                rows="3"
+                                placeholder="Enter your address"
+                                required></textarea>
+
+                        </div>
+
+
+                        <!-- Sign Up -->
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            Sign Up
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         LOGIN MODAL
+         ================================================== -->
+
+    <div
+        class="modal fade"
+        id="loginModal"
+        tabindex="-1"
+        aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+
+                <!-- Modal Header -->
+
+                <div class="modal-header">
+
+                    <h5
+                        class="modal-title"
+                        id="loginModalLabel">
+
+                        The Fat Turtle - Login
+
+                    </h5>
+
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    </button>
+
+                </div>
+
+
+                <!-- Modal Body -->
+
+                <div class="modal-body">
+
+                    <form id="loginForm">
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="loginEmail"
+                                class="form-label">
+
+                                Email ID
+
+                            </label>
+
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="loginEmail"
+                                placeholder="Enter your email"
+                                required>
+
+                        </div>
+
+
+                        <!-- Password -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="loginPassword"
+                                class="form-label">
+
+                                Password
+
+                            </label>
+
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="loginPassword"
+                                placeholder="Enter your password"
+                                required>
+
+                        </div>
+
+
+                        <!-- Login -->
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            Login
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         BOOTSTRAP 5 JAVASCRIPT
+         ================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <!-- Our JavaScript -->
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>

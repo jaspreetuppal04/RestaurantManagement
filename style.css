@@ -1,0 +1,650 @@
+/* =========================
+   BASIC PAGE STYLING
+   ========================= */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #F7F3EA;
+    color: #26332A;
+}
+
+
+/* =========================
+   HEADER / HERO
+   ========================= */
+
+header {
+    height: 420px;
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/* Header image */
+
+.header-image {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* Dark overlay */
+
+header::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(24, 60, 50, 0.55);
+
+    z-index: 1;
+}
+
+
+/* =========================
+   HEADER CONTENT
+   ========================= */
+
+.header-overlay {
+    position: absolute;
+
+    z-index: 2;
+
+    color: white;
+
+    text-align: center;
+}
+
+
+.header-overlay h1 {
+    margin: 0 0 25px 0;
+
+    font-size: 55px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+nav a {
+    color: white;
+
+    text-decoration: none;
+
+    margin: 0 15px;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+nav a:hover {
+    color: #D9A441;
+}
+
+
+/* =========================
+   LOGIN / SIGN UP
+   ========================= */
+
+.auth-buttons {
+    position: absolute;
+
+    top: 20px;
+    right: 25px;
+
+    display: flex;
+
+    gap: 10px;
+
+    z-index: 5;
+}
+
+
+/* Login */
+
+.auth-buttons .login-button {
+    background-color: transparent;
+
+    color: white;
+
+    border: 1px solid white;
+
+    padding: 8px 16px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+.auth-buttons .login-button:hover {
+    background-color: white;
+
+    color: #183C32;
+}
+
+
+/* Sign Up */
+
+.auth-buttons .signup-button {
+    background-color: #D9A441;
+
+    color: #183C32;
+
+    border: 1px solid #D9A441;
+
+    padding: 8px 16px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+.auth-buttons .signup-button:hover {
+    background-color: #B98225;
+
+    border-color: #B98225;
+
+    color: white;
+}
+
+
+/* =========================
+   LOGGED-IN USER
+   ========================= */
+
+#userAccount {
+    position: absolute;
+
+    top: 20px;
+    right: 25px;
+
+    z-index: 5;
+
+    display: none;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+/* Welcome message */
+
+#userWelcome {
+    color: white;
+
+    background-color: rgba(24, 60, 50, 0.85);
+
+    padding: 9px 16px;
+
+    border-radius: 6px;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    white-space: nowrap;
+}
+
+
+/* Logout */
+
+#logoutButton {
+    background-color: #8B5E34;
+
+    color: white;
+
+    border: 1px solid #8B5E34;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+#logoutButton:hover {
+    background-color: #6F4528;
+
+    border-color: #6F4528;
+}
+
+
+/* =========================
+   SECTIONS
+   ========================= */
+
+section {
+    padding: 40px 20px;
+
+    max-width: 1000px;
+
+    margin: auto;
+}
+
+
+/* Section headings */
+
+#menu h2,
+#orders h2,
+#contact h2,
+#location h2 {
+    color: #183C32;
+}
+
+
+/* =========================
+   GENERAL BUTTONS
+   ========================= */
+
+button {
+    background-color: #D9A441;
+
+    color: #183C32;
+
+    border: none;
+
+    padding: 11px 20px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+button:hover {
+    background-color: #B98225;
+
+    color: white;
+}
+
+
+/* =========================
+   MENU
+   ========================= */
+
+#menuItems {
+    display: flex;
+
+    gap: 20px;
+
+    flex-wrap: wrap;
+}
+
+
+/* Food card */
+
+.food-item {
+    background-color: #FFFDF8;
+
+    padding: 20px;
+
+    width: 250px;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    border: 1px solid #E2D6C3;
+
+    box-shadow: 0 3px 8px rgba(38, 51, 42, 0.10);
+}
+
+
+/* Food image */
+
+.food-image {
+    width: 100%;
+
+    max-width: 100%;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    display: block;
+
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+}
+
+
+/* Food name */
+
+.food-item h3 {
+    margin-top: 0;
+
+    color: #26332A;
+}
+
+
+/* Food price */
+
+.food-item p {
+    color: #8B5E34;
+
+    font-weight: bold;
+
+    font-size: 18px;
+}
+
+
+/* =========================
+   ORDERS
+   ========================= */
+
+#orderList {
+    list-style-type: none;
+
+    padding: 0;
+}
+
+
+#orderList li {
+    background-color: #FFFDF8;
+
+    margin: 10px 0;
+
+    padding: 12px;
+
+    border-radius: 6px;
+
+    border-left: 4px solid #D9A441;
+}
+
+
+/* Remove button */
+
+#orderList button {
+    margin-left: 15px;
+
+    background-color: #8B5E34;
+
+    color: white;
+
+    padding: 6px 12px;
+
+    border-radius: 5px;
+}
+
+
+#orderList button:hover {
+    background-color: #6F4528;
+}
+
+
+/* =========================
+   DRAG AND DROP
+   ========================= */
+
+#orderDropArea {
+    border: 2px dashed #D9A441;
+
+    background-color: #FFFDF8;
+
+    color: #8B5E34;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border-radius: 8px;
+
+    margin: 20px 0;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   CONTACT
+   ========================= */
+
+#contact {
+    background-color: #E8DCC8;
+
+    max-width: none;
+}
+
+
+#contact p {
+    color: #5A5045;
+}
+
+
+/* =========================
+   LOCATION
+   ========================= */
+
+#location {
+    text-align: center;
+
+    background-color: #FFFDF8;
+
+    max-width: none;
+}
+
+
+#location h2 {
+    color: #183C32;
+}
+
+
+#locationResult {
+    margin-top: 20px;
+
+    color: #8B5E34;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   BOOTSTRAP MODALS
+   ========================= */
+
+.modal-content {
+    border-radius: 10px;
+
+    border: none;
+
+    overflow: hidden;
+}
+
+
+.modal-header {
+    background-color: #183C32;
+
+    color: white;
+}
+
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+
+/* Bootstrap primary button */
+
+.modal .btn-primary {
+    background-color: #D9A441;
+
+    border-color: #D9A441;
+
+    color: #183C32;
+
+    font-weight: bold;
+}
+
+
+.modal .btn-primary:hover {
+    background-color: #B98225;
+
+    border-color: #B98225;
+
+    color: white;
+}
+
+
+/* Form labels */
+
+.modal .form-label {
+    color: #26332A;
+
+    font-weight: bold;
+}
+
+
+/* Form fields */
+
+.modal .form-control:focus {
+    border-color: #D9A441;
+
+    box-shadow: 0 0 0 0.2rem rgba(217, 164, 65, 0.25);
+}
+
+
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
+
+@media screen and (max-width: 600px) {
+
+    /* Header */
+
+    header {
+        height: 300px;
+    }
+
+
+    /* Header title */
+
+    .header-overlay h1 {
+        font-size: 10vw;
+
+        margin-bottom: 15px;
+    }
+
+
+    /* Navigation */
+
+    nav a {
+        display: block;
+
+        margin: 8px;
+    }
+
+
+    /* Login / Sign Up */
+
+    .auth-buttons {
+        top: 12px;
+
+        right: 12px;
+
+        gap: 5px;
+    }
+
+
+    .auth-buttons .login-button,
+    .auth-buttons .signup-button {
+        padding: 6px 10px;
+
+        font-size: 12px;
+    }
+
+
+    /* Logged-in account */
+
+    #userAccount {
+        top: 12px;
+
+        right: 12px;
+
+        gap: 5px;
+    }
+
+
+    #userWelcome {
+        font-size: 12px;
+
+        padding: 7px 10px;
+    }
+
+
+    #logoutButton {
+        padding: 6px 10px;
+
+        font-size: 12px;
+    }
+
+
+    /* Menu */
+
+    #menuItems {
+        flex-direction: column;
+    }
+
+
+    .food-item {
+        width: 100%;
+    }
+
+
+    .food-image {
+        height: 180px;
+    }
+
+
+    /* Bootstrap modal */
+
+    .modal-dialog {
+        margin: 10px;
+    }
+
+}
