@@ -1,6 +1,4 @@
-/* =========================
-   BASIC PAGE STYLING
-   ========================= */
+/* BASIC PAGE STYLING */
 
 body {
     font-family: Arial, sans-serif;
@@ -10,9 +8,7 @@ body {
 }
 
 
-/* =========================
-   HEADER / HERO
-   ========================= */
+/* HEADER / HERO */
 
 header {
     height: 420px;
@@ -59,9 +55,7 @@ header::after {
 }
 
 
-/* =========================
-   HEADER CONTENT
-   ========================= */
+/* HEADER CONTENT */
 
 .header-overlay {
     position: absolute;
@@ -83,9 +77,7 @@ header::after {
 }
 
 
-/* =========================
-   NAVIGATION
-   ========================= */
+/* NAVIGATION */
 
 nav a {
     color: white;
@@ -105,9 +97,7 @@ nav a:hover {
 }
 
 
-/* =========================
-   LOGIN / SIGN UP
-   ========================= */
+/* LOGIN / SIGN UP */
 
 .auth-buttons {
     position: absolute;
@@ -181,9 +171,7 @@ nav a:hover {
 }
 
 
-/* =========================
-   LOGGED-IN USER
-   ========================= */
+/* LOGGED-IN USER */
 
 #userAccount {
     position: absolute;
@@ -248,9 +236,7 @@ nav a:hover {
 }
 
 
-/* =========================
-   SECTIONS
-   ========================= */
+/* SECTIONS */
 
 section {
     padding: 40px 20px;
@@ -271,9 +257,7 @@ section {
 }
 
 
-/* =========================
-   GENERAL BUTTONS
-   ========================= */
+/* GENERAL BUTTONS */
 
 button {
     background-color: #D9A441;
@@ -301,9 +285,7 @@ button:hover {
 }
 
 
-/* =========================
-   MENU
-   ========================= */
+/* MENU */
 
 #menuItems {
     display: flex;
@@ -374,9 +356,7 @@ button:hover {
 }
 
 
-/* =========================
-   ORDERS
-   ========================= */
+/* ORDERS */
 
 #orderList {
     list-style-type: none;
@@ -418,9 +398,7 @@ button:hover {
 }
 
 
-/* =========================
-   DRAG AND DROP
-   ========================= */
+/* DRAG AND DROP */
 
 #orderDropArea {
     border: 2px dashed #D9A441;
@@ -441,9 +419,7 @@ button:hover {
 }
 
 
-/* =========================
-   CONTACT
-   ========================= */
+/* CONTACT */
 
 #contact {
     background-color: #E8DCC8;
@@ -457,9 +433,7 @@ button:hover {
 }
 
 
-/* =========================
-   LOCATION
-   ========================= */
+/* LOCATION */
 
 #location {
     text-align: center;
@@ -484,9 +458,7 @@ button:hover {
 }
 
 
-/* =========================
-   BOOTSTRAP MODALS
-   ========================= */
+/* BOOTSTRAP MODALS */
 
 .modal-content {
     border-radius: 10px;
@@ -549,9 +521,7 @@ button:hover {
 }
 
 
-/* =========================
-   RESPONSIVE DESIGN
-   ========================= */
+/* RESPONSIVE DESIGN */
 
 @media screen and (max-width: 600px) {
 
