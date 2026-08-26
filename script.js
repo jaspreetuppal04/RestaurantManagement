@@ -326,7 +326,7 @@ if (signupForm) {
             signupForm.reset();
 
 
-            /* Close Bootstrap modal */
+            /* PRACTICAL-5: BOOTSTRAP 5 MODAL */
 
             const signupModalElement =
                 document.getElementById("signupModal");
