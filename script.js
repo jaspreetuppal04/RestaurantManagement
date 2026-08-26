@@ -1,6 +1,4 @@
-/* =====================================================
-   ADD FOOD ITEM TO ORDER
-   ===================================================== */
+/* ADD FOOD ITEM TO ORDER*/
 
 function addOrder(foodName) {
 
@@ -56,9 +54,7 @@ function addOrder(foodName) {
 
 
 
-/* =====================================================
-   DRAG AND DROP
-   ===================================================== */
+/* PRACTICAL-4: DRAG AND DROP API */
 
 
 /* Allow dropping */
@@ -111,9 +107,7 @@ function drop(event) {
 
 
 
-/* =====================================================
-   GEOLOCATION
-   ===================================================== */
+/* Practical 4: GEOLOCATION API */
 
 function getLocation() {
 
@@ -256,6 +250,8 @@ if (signupForm) {
             }
 
 
+            /* PRACTICAL-4: LOCAL STORAGE */
+
             /* Get existing user */
 
             const savedUser =
@@ -359,9 +355,7 @@ if (signupForm) {
 
 
 
-/* =====================================================
-   LOGIN
-   ===================================================== */
+/* LOGIN */
 
 const loginForm =
     document.getElementById("loginForm");
@@ -494,9 +488,7 @@ if (loginForm) {
 
 
 
-/* =====================================================
-   LOGOUT
-   ===================================================== */
+/* LOGOUT */
 
 function logoutUser() {
 
@@ -522,9 +514,7 @@ function logoutUser() {
 
 
 
-/* =====================================================
-   DISPLAY LOGGED-IN USER
-   ===================================================== */
+/* DISPLAY LOGGED-IN USER */
 
 function showLoggedInUser() {
 
@@ -554,9 +544,7 @@ function showLoggedInUser() {
         document.getElementById("userWelcome");
 
 
-    /* =================================================
-       USER IS LOGGED IN
-       ================================================= */
+    /* USER IS LOGGED IN */
 
     if (
         savedUser &&
@@ -600,9 +588,7 @@ function showLoggedInUser() {
     }
 
 
-    /* =================================================
-       USER IS LOGGED OUT
-       ================================================= */
+    /* USER IS LOGGED OUT */
 
     else {
 
@@ -631,8 +617,6 @@ function showLoggedInUser() {
 
 
 
-/* =====================================================
-   CHECK LOGIN WHEN PAGE LOADS
-   ===================================================== */
+/* CHECK LOGIN WHEN PAGE LOADS */
 
 showLoggedInUser();
