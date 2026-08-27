@@ -62,7 +62,7 @@ header::after {
 
     z-index: 2;
 
-    color: white;
+    color: #FFF8ED;
 
     text-align: center;
 }
@@ -422,14 +422,17 @@ button:hover {
 /* CONTACT */
 
 #contact {
-    background-color: #E8DCC8;
+    background-color: #6F9295;
 
     max-width: none;
 }
 
+#contact h2 {
+    color: #263F42;
+}
 
 #contact p {
-    color: #5A5045;
+    color: #F3E4C8;
 }
 
 
