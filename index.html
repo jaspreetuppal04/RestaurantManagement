@@ -18,6 +18,8 @@
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
+    <!-- Practical-6: Tailwind CSS using Play CDN -->
+     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Our CSS -->
 
@@ -38,7 +40,7 @@
         <!-- Header Image -->
 
         <img
-            src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/TheFatTurtle.JPG"
+            src="TheFatTurtle.JPG"
             alt="The Fat Turtle Cafe"
             class="header-image"
             style="max-width:100%;height:auto;">
@@ -123,11 +125,19 @@
     </header>
 
 
+     <!-- MENU + FEEDBACK CONTAINER -->
+    <div class="menu-feedback-container
+            grid
+            grid-cols-1
+            lg:grid-cols-[850px_350px]
+            gap-10
+            mx-auto
+            justify-center">
 
     <!--  MENU SECTION -->
     <!--PRACTICAL-4: DRAG and DROP API for every food items-->
 
-    <section id="menu">
+    <section id="menu" class="!w-auto">
 
         <h2>Our Menu</h2>
 
@@ -138,12 +148,13 @@
             <!-- Pizza -->
 
             <div
-                class="food-item"
+                
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Pizza.jpeg"
+                    src="Pizza.jpeg"
                     alt="Margherita Pizza"
                     class="food-image">
                 <h3>
@@ -166,13 +177,13 @@
 
             <!-- Burger -->
 
-            <div
-                class="food-item"
+            <div 
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Burger.jpeg"
+                    src="Burger.jpeg"
                     alt="Veg Burger"
                     class="food-image">
                 <h3>
@@ -195,12 +206,12 @@
             <!-- French Fries -->
 
             <div
-                class="food-item"
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Fries.jpeg"
+                    src="Fries.jpeg"
                     alt="French Fries"
                     class="food-image">
                 <h3>
@@ -224,12 +235,12 @@
             <!-- Sandwich -->
 
             <div
-                class="food-item"
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Sandwich.jpeg"
+                    src="Sandwich.jpeg"
                     alt="Grilled Sandwich"
                     class="food-image">
                 <h3>
@@ -252,13 +263,13 @@
 
             <!-- Nachos -->
 
-            <div
-                class="food-item"
+            <div          
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Nachos.jpeg"
+                    src="Nachos.jpeg"
                     alt="Cheese Nachos"
                     class="food-image">
 
@@ -283,12 +294,12 @@
             <!-- Cold Coffee -->
 
             <div
-                class="food-item"
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Coffee.jpeg"
+                    src="Coffee.jpeg"
                     alt="Cold Coffee"
                     class="food-image">
                 <h3>
@@ -311,13 +322,13 @@
 
             <!-- Chocolate Shake -->
 
-            <div
-                class="food-item"
+            <div  
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/Shake.jpeg"
+                    src="Shake.jpeg"
                     alt="Chocolate Shake"
                     class="food-image">
 
@@ -342,12 +353,12 @@
             <!-- Cheesecake -->
 
             <div
-                class="food-item"
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/cheesecake.jpeg"
+                    src="cheesecake.jpeg"
                     alt="Cheesecake"
                     class="food-image">
 
@@ -372,12 +383,12 @@
             <!-- Brownie -->
 
             <div
-                class="food-item"
+                class="food-item hover:bg-gray-300 hover:text-white transition duration-300"
                 draggable="true"
                 ondragstart="drag(event)">
 
                 <img
-                    src="/Users/jaspreetuppal/Desktop/FullStackDev/Restaurant_mngmnt/brownies.jpeg"
+                    src="brownies.jpeg"
                     alt="Chocolate Brownie"
                     class="food-image">
 
@@ -399,8 +410,135 @@
             </div>
 
         </div>
+    </section>
+
+    <!-- PRACTICAL-6: TAILWIND CSS FEEDBACK FORM -->
+    <!-- to make it side by side of menu -->
+    <section id="feedback" class="w-full lg:w-96 flex-shrink-0"> 
+     
+    <div class="bg-[#6F9295] rounded-lg shadow-md p-6">
+
+    <h2 class="text-2xl font-semibold text-center mb-6">
+        Give Us Your Feedback
+    </h2>
+
+    <form id="feedbackForm">
+
+        <!-- Name -->
+        <div class="mb-4">
+
+            <label
+                for="feedbackName"
+                class="block text-gray-700 text-sm font-bold mb-2">
+
+                Name
+
+            </label>
+
+            <input
+                type="text"
+                id="feedbackName"
+                name="feedbackName"
+                placeholder="Enter your name"
+                class="w-full border border-gray-300 rounded-md px-3 py-2"
+                required>
+
+        </div>
+
+
+        <!-- Phone Number -->
+        <div class="mb-4">
+
+            <label
+                for="feedbackPhone"
+                class="block text-gray-700 text-sm font-bold mb-2">
+
+                Phone Number
+
+            </label>
+
+            <input
+                type="tel"
+                id="feedbackPhone"
+                name="feedbackPhone"
+                placeholder="Enter your phone number"
+                class="w-full border border-gray-300 rounded-md px-3 py-2"
+                required>
+
+        </div>
+
+
+        <!-- Rating -->
+        <div class="mb-4">
+
+            <label
+                for="feedbackRating"
+                class="block text-gray-700 text-sm font-bold mb-2">
+
+                Rating
+
+            </label>
+
+            <select
+                id="feedbackRating"
+                name="feedbackRating"
+                class="w-full border border-gray-300 rounded-md px-3 py-2"
+                required>
+
+                <option value="">Select Rating</option>
+                <option value="5">★★★★★ Excellent</option>
+                <option value="4">★★★★ Very Good</option>
+                <option value="3">★★★ Good</option>
+                <option value="2">★★ Average</option>
+                <option value="1">★ Poor</option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Feedback -->
+        <div class="mb-4">
+
+            <label
+                for="feedbackMessage"
+                class="block text-gray-700 text-sm font-bold mb-2">
+
+                Your Feedback
+
+            </label>
+
+            <textarea
+                id="feedbackMessage"
+                name="feedbackMessage"
+                rows="4"
+                placeholder="Write your feedback..."
+                class="w-full border border-gray-300 rounded-md px-3 py-2"
+                required></textarea>
+
+        </div>
+
+
+        <!-- Submit Button -->
+        <div class="text-center">
+
+            <button
+                type="submit"
+               class="bg-[#36585C] hover:bg-[#2B474A] text-white font-bold py-2 px-4 rounded">
+
+                Submit Feedback
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
 
     </section>
+
+</div>
 
 
 
@@ -433,7 +571,6 @@
         <ul id="orderList"></ul>
 
     </section>
-
 
 
     <!-- PRACTICAL-4: GEOLOCATION API -->

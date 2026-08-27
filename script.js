@@ -620,3 +620,79 @@ function showLoggedInUser() {
 /* CHECK LOGIN WHEN PAGE LOADS */
 
 showLoggedInUser();
+
+/* CHECK LOGIN WHEN PAGE LOADS */
+
+showLoggedInUser();
+
+
+/* PRACTICAL-6: FEEDBACK FORM + LOCAL STORAGE*/
+
+const feedbackForm =
+    document.getElementById("feedbackForm");
+
+if (feedbackForm) {
+
+    feedbackForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById("feedbackName").value.trim();
+
+            const phone =
+                document.getElementById("feedbackPhone").value.trim();
+
+            const rating =
+                document.getElementById("feedbackRating").value;
+
+            const message =
+                document.getElementById("feedbackMessage").value.trim();
+
+
+            /* Get existing feedback */
+
+            const existingFeedback =
+                JSON.parse(
+                    localStorage.getItem("restaurantFeedback")
+                ) || [];
+
+
+            /* Create new feedback */
+
+            const feedback = {
+
+                name: name,
+                phone: phone,
+                rating: rating,
+                message: message
+
+            };
+
+
+            /* Add new feedback */
+
+            existingFeedback.push(feedback);
+
+
+            /* Save feedback in Local Storage */
+
+            localStorage.setItem(
+                "restaurantFeedback",
+                JSON.stringify(existingFeedback)
+            );
+
+
+            alert("Thank you for your feedback!");
+
+
+            /* Clear form */
+
+            feedbackForm.reset();
+
+        }
+    );
+
+}
