@@ -1,57 +1,265 @@
-/* ADD FOOD ITEM TO ORDER*/
+/* FOOD PRICES */
+
+const foodPrices = {
+
+    "Margherita Pizza": 599,
+
+    "Veg Burger": 299,
+
+    "French Fries": 249,
+
+    "Grilled Sandwich": 279,
+
+    "Cheese Nachos": 249,
+
+    "Cold Coffee": 199,
+
+    "Chocolate Shake": 229,
+
+    "Cheesecake": 199,
+
+    "Chocolate Brownie": 149
+
+};
+
+
+/* STORE ORDERS */
+
+let orders = [];
+
+
+/* ADD FOOD ITEM TO ORDER */
 
 function addOrder(foodName) {
+
+    foodName = foodName.trim();
+
+    const existingOrder =
+        orders.find(
+            order => order.name === foodName
+        );
+
+    /* If item already exists, increase quantity */
+
+    if (existingOrder) {
+
+        existingOrder.quantity++;
+
+    }
+
+    else {
+
+        orders.push({
+
+            name: foodName,
+
+            price: foodPrices[foodName],
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    updateOrders();
+
+}
+
+/* UPDATE ORDERS AND BILL */
+
+function updateOrders() {
 
     const orderList =
         document.getElementById("orderList");
 
 
-    /* Create new list item */
-
-    const listItem =
-        document.createElement("li");
+    const billDetails =
+        document.getElementById("billDetails");
 
 
-    /* Food name */
-
-    const foodText =
-        document.createElement("span");
-
-    foodText.textContent =
-        foodName;
+    const totalAmount =
+        document.getElementById("totalAmount");
 
 
-    /* Create Remove button */
+    /* Clear previous data */
 
-    const removeButton =
-        document.createElement("button");
+    orderList.innerHTML = "";
 
-    removeButton.textContent =
-        "Remove";
+    billDetails.innerHTML = "";
 
 
-    /* Remove order */
-
-    removeButton.onclick = function () {
-
-        listItem.remove();
-
-    };
+    let grandTotal = 0;
 
 
-    /* Add food name and button */
-
-    listItem.appendChild(foodText);
-
-    listItem.appendChild(removeButton);
+    orders.forEach(
+        function (order, index) {
 
 
-    /* Add item to order list */
+            /* Calculate item total */
 
-    orderList.appendChild(listItem);
+            const itemTotal =
+                order.price *
+                order.quantity;
+
+
+            grandTotal += itemTotal;
+
+
+            /* CREATE ORDER ITEM */
+
+            const listItem =
+                document.createElement("li");
+
+
+            listItem.innerHTML =
+
+                "<strong>" +
+                order.name +
+                "</strong>" +
+
+                " | ₹" +
+                order.price +
+
+                " | Quantity: " +
+                order.quantity +
+
+                " | Total: ₹" +
+                itemTotal;
+
+
+            /* QUANTITY DECREASE BUTTON */
+
+            const decreaseButton =
+                document.createElement("button");
+
+            decreaseButton.textContent =
+                "-";
+
+
+            decreaseButton.onclick =
+                function () {
+
+                    if (order.quantity > 1) {
+
+                        order.quantity--;
+
+                    }
+
+                    else {
+
+                        orders.splice(index, 1);
+
+                    }
+
+                    updateOrders();
+
+                };
+
+
+            /* QUANTITY INCREASE BUTTON */
+
+            const increaseButton =
+                document.createElement("button");
+
+            increaseButton.textContent =
+                "+";
+
+
+            increaseButton.onclick =
+                function () {
+
+                    order.quantity++;
+
+                    updateOrders();
+
+                };
+
+
+            /* REMOVE BUTTON */
+
+            const removeButton =
+                document.createElement("button");
+
+            removeButton.textContent =
+                "Remove";
+
+
+            removeButton.onclick =
+                function () {
+
+                    orders.splice(index, 1);
+
+                    updateOrders();
+
+                };
+
+
+            /* ADD BUTTONS */
+
+            listItem.appendChild(
+                decreaseButton
+            );
+
+            listItem.appendChild(
+                increaseButton
+            );
+
+            listItem.appendChild(
+                removeButton
+            );
+
+
+            /* ADD TO ORDER LIST */
+
+            orderList.appendChild(
+                listItem
+            );
+
+
+            /* CREATE BILL ITEM */
+
+            const billItem =
+                document.createElement("div");
+
+
+            billItem.className =
+                "bill-item";
+
+
+            billItem.innerHTML =
+
+                "<span>" +
+
+                order.name +
+
+                " × " +
+
+                order.quantity +
+
+                "</span>" +
+
+                "<span>₹" +
+
+                itemTotal +
+
+                "</span>";
+
+
+            billDetails.appendChild(
+                billItem
+            );
+
+        }
+    );
+
+
+    /* UPDATE GRAND TOTAL */
+
+    totalAmount.textContent =
+        grandTotal;
 
 }
-
 
 
 /* PRACTICAL-4: DRAG AND DROP API */
@@ -75,7 +283,10 @@ function drag(event) {
 
 
     const foodName =
-        foodItem.querySelector("h3").textContent;
+        foodItem
+            .querySelector("h3")
+            .textContent
+            .trim();
 
 
     event.dataTransfer.setData(
