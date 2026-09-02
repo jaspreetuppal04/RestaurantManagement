@@ -377,6 +377,61 @@ button:hover {
     border-left: 4px solid #D9A441;
 }
 
+/* BILL SECTION */
+
+#billSection {
+
+    margin-top: 30px;
+
+    background-color: #FFFDF8;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    border: 1px solid #E2D6C3;
+
+    box-shadow: 0 3px 8px rgba(38, 51, 42, 0.10);
+
+}
+
+
+#billSection h2 {
+
+    color: #183C32;
+
+    margin-top: 0;
+
+}
+
+
+.bill-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid #E2D6C3;
+
+}
+
+
+#grandTotal {
+
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #8B5E34;
+
+}
+
 
 /* Remove button */
 
