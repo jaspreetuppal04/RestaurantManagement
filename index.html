@@ -21,6 +21,9 @@
     <!-- Practical-6: Tailwind CSS using Play CDN -->
      <script src="https://cdn.tailwindcss.com"></script>
 
+     <!-- PRACTICAL-7: Vue 3 -->
+     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
     <!-- Our CSS -->
 
     <link
@@ -540,7 +543,20 @@
 
 </div>
 
+<!-- PRACTICAL-7: VUE CUSTOM DIRECTIVE - UPPERCASE COUPON -->
 
+<section id="discountCoupon">
+
+    <h2>Special Offer</h2>
+
+    <p>Get 10% OFF on your order!</p>
+
+    <p>
+        Click the coupon code:
+        <span v-uppercase class="coupon-code">fat10</span>
+    </p>
+
+</section>
 
     <!-- DRAG AND DROP AREA -->
 
@@ -930,7 +946,6 @@
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
     </script>
-
 
     <!-- Our JavaScript -->
 

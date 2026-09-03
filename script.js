@@ -907,3 +907,21 @@ if (feedbackForm) {
     );
 
 }
+
+    // PRACTICAL-7: VUE CUSTOM DIRECTIVE - UPPERCASE COUPON
+
+const { createApp } = Vue;
+
+const app = createApp({});
+
+app.directive('uppercase', {
+    mounted(el) {
+        el.style.cursor = 'pointer';
+
+        el.addEventListener('click', () => {
+            el.innerText = el.innerText.toUpperCase();
+        });
+    }
+});
+
+app.mount('#discountCoupon');
