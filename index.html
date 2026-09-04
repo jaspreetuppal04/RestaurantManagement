@@ -543,20 +543,40 @@
 
 </div>
 
-<!-- PRACTICAL-7: VUE CUSTOM DIRECTIVE - UPPERCASE COUPON -->
 
-<section id="discountCoupon">
+<!-- PRACTICAL-7: VUE CUSTOM DIRECTIVES -->
 
-    <h2>Special Offer</h2>
+<div id="practical7">
 
-    <p>Get 10% OFF on your order!</p>
+    <!-- UPPERCASE DIRECTIVE -->
 
-    <p>
-        Click the coupon code:
-        <span v-uppercase class="coupon-code">fat10</span>
-    </p>
+    <section id="discountCoupon">
 
-</section>
+        <h2>Special Offer</h2>
+
+        <p>Get 10% OFF on your order!</p>
+
+        <p>
+            Click the coupon code:
+            <span v-uppercase class="coupon-code">fat10</span>
+        </p>
+
+    </section>
+
+
+    <!-- V-LIST DIRECTIVE -->
+
+    <section id="chefSpecials">
+
+        <h2>👨‍🍳 Chef's Specials</h2>
+
+        <p>Handpicked special dishes prepared by our chef!</p>
+
+        <ul v-list="specialItems"></ul>
+
+    </section>
+
+</div>
 
     <!-- DRAG AND DROP AREA -->
 

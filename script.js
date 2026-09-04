@@ -908,20 +908,80 @@ if (feedbackForm) {
 
 }
 
-    // PRACTICAL-7: VUE CUSTOM DIRECTIVE - UPPERCASE COUPON
+// PRACTICAL-7: VUE CUSTOM DIRECTIVES
 
 const { createApp } = Vue;
 
-const app = createApp({});
+
+const app = createApp({
+
+    data() {
+        return {
+            specialItems: [
+    {
+        name: "Creamy Alfredo Pasta",
+        image: "Alfredo_pasta.jpeg"
+    },
+    {
+        name: "Strawberry Mojito",
+        image: "strawberry_mojito.jpeg"
+    }
+]
+        };
+    }
+
+});
+
+
+// Custom Directive 1: Convert coupon text to uppercase
 
 app.directive('uppercase', {
+
     mounted(el) {
+
         el.style.cursor = 'pointer';
 
         el.addEventListener('click', () => {
-            el.innerText = el.innerText.toUpperCase();
+
+            el.textContent = el.textContent.toUpperCase();
+
         });
+
     }
+
 });
 
-app.mount('#discountCoupon');
+
+// Custom Directive 2: Dynamically create Chef's Specials list
+
+app.directive('list', {
+
+    mounted(el, binding) {
+
+        binding.value.forEach(item => {
+
+            const listItem = document.createElement('li');
+
+            const image = document.createElement('img');
+            image.src = item.image;
+            image.alt = item.name;
+            image.classList.add('special-image');
+
+            const name = document.createElement('span');
+            name.textContent = item.name;
+
+            listItem.appendChild(image);
+            listItem.appendChild(name);
+
+            el.appendChild(listItem);
+
+        });
+
+    }
+
+});
+
+
+// Mount Vue to the Practical-7 area
+
+app.mount('#practical7');
