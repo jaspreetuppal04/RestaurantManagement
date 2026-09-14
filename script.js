@@ -919,7 +919,7 @@ const app = createApp({
         return {
             specialItems: [
     {
-        name: "Creamy Alfredo Pasta",
+        name: "Alfredo Pasta with Grilled Tofu",
         image: "Alfredo_pasta.jpeg"
     },
     {

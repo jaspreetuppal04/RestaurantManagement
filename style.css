@@ -761,27 +761,27 @@ button:hover {
 
 #chefSpecials ul {
     list-style: none;
-
     padding: 0;
-
     margin: 20px 0 0;
+
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+#chefSpecials li {
+    width: 210px;
 }
 
 .special-image {
-    width: 100%;
-
-    max-width: 100%;
-
+    width: 210px;
     height: 180px;
-
     object-fit: cover;
-
     display: block;
-
     border-radius: 8px;
-
-    margin-bottom: 15px;
+    margin: 0 auto 15px;
 }
+
 
 #chefSpecials li:hover {
     background-color: #36585C;
