@@ -2,23 +2,27 @@
 
 const foodPrices = {
 
-    "Margherita Pizza": 599,
+    "couscous-chickpea-salad": 249,
 
-    "Veg Burger": 299,
+    "Cheese Fatayer": 299,
 
-    "French Fries": 249,
+    "Falafel Hummus Wrap ": 249,
 
-    "Grilled Sandwich": 279,
+    "Vegan Avocado Toast with Beet Hummus": 279,
 
-    "Cheese Nachos": 249,
+    "Mezze Platter": 249,
 
-    "Cold Coffee": 199,
+    "Turkish Coffee": 199,
 
-    "Chocolate Shake": 229,
+    "Fattoush Salad": 229,
 
-    "Cheesecake": 199,
+    "Classic Kunafa": 199,
 
-    "Chocolate Brownie": 149
+    "Turkish Affogato": 149,
+
+    "Eggplant Moussaka": 399,
+
+    "Baklava With IceCream": 199 
 
 };
 
@@ -917,14 +921,16 @@ const app = createApp({
 
     data() {
         return {
-            specialItems: [
+specialItems: [
     {
-        name: "Alfredo Pasta with Grilled Tofu",
-        image: "Alfredo_pasta.jpeg"
+        name: "Eggplant Moussaka",
+        image: "Eggplant-Moussaka.jpeg",
+        price: 499
     },
     {
-        name: "Strawberry Mojito",
-        image: "strawberry_mojito.jpeg"
+        name: "Baklava With IceCream",
+        image: "Baklava-With-IceCream.jpg",
+        price: 299
     }
 ]
         };
@@ -955,32 +961,50 @@ app.directive('uppercase', {
 // Custom Directive 2: Dynamically create Chef's Specials list
 
 app.directive('list', {
-
     mounted(el, binding) {
 
         binding.value.forEach(item => {
 
             const listItem = document.createElement('li');
 
+            // Make Chef Special draggable
+            listItem.setAttribute('draggable', 'true');
+
+            listItem.addEventListener('dragstart', drag);
+
+            // Image
             const image = document.createElement('img');
             image.src = item.image;
             image.alt = item.name;
             image.classList.add('special-image');
 
-            const name = document.createElement('span');
+            // Name
+            const name = document.createElement('h3');
             name.textContent = item.name;
 
+            // Price
+            const price = document.createElement('p');
+            price.textContent = "₹" + item.price;
+
+            // Add to Order button
+            const button = document.createElement('button');
+            button.textContent = "Add to Order";
+
+            button.addEventListener('click', function () {
+                addOrder(item.name);
+            });
+
+            // Add everything to the Chef Special item
             listItem.appendChild(image);
             listItem.appendChild(name);
+            listItem.appendChild(price);
+            listItem.appendChild(button);
 
             el.appendChild(listItem);
-
         });
 
     }
-
 });
-
 
 // Mount Vue to the Practical-7 area
 

@@ -337,6 +337,11 @@ button:hover {
     margin-bottom: 15px;
 }
 
+.food-item:nth-child(2) .food-image,
+.food-item:nth-child(3) .food-image,
+.food-item:nth-child(6) .food-image {
+    object-position: center bottom;
+}
 
 /* Food name */
 
@@ -780,6 +785,17 @@ button:hover {
     display: block;
     border-radius: 8px;
     margin: 0 auto 15px;
+}
+
+#chefSpecials li h3 {
+    color: #26332A;
+    margin-top: 0;
+}
+
+#chefSpecials li p {
+    color: #8B5E34;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 
