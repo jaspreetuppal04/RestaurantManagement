@@ -1,53 +1,84 @@
 # The Fat Turtle – Restaurant Management Website
 
-A responsive and interactive restaurant and café website built using **HTML, CSS, JavaScript, Bootstrap 5, and Vue.js**. The project provides menu browsing, ordering functionality, user authentication, drag-and-drop ordering, browser-based location detection, and Vue.js custom directives.
+A responsive and interactive restaurant and café website built using **HTML5, CSS3, JavaScript, Bootstrap 5, Tailwind CSS, and Vue.js 3**.
+
+The project demonstrates restaurant menu browsing, ordering, drag-and-drop ordering, bill calculation, user authentication, local storage, browser geolocation, feedback submission, and Vue.js custom directives.
 
 ## Features
 
-* Interactive restaurant menu
-* Add food items to orders
-* Remove items from the order
-* Bill section with grand total calculation
-* Drag-and-drop food ordering
-* User Sign Up and Login
-* Logout functionality
-* User data stored using browser `localStorage`
-* Password validation
-* Browser geolocation
-* Responsive layout using Bootstrap 5
-* Restaurant contact and location section
-* **10% discount coupon using a Vue.js custom directive**
-* **Chef's Specials section dynamically generated using a Vue.js custom directive**
+- Interactive restaurant menu
+- Food items with images, names, and prices
+- Add food items to orders using the **Add to Order** button
+- Remove items from the order
+- Increase or decrease item quantity
+- Automatic bill calculation with grand total
+- Drag-and-drop food ordering
+- User Sign Up and Login
+- Logout functionality
+- User data stored using browser `localStorage`
+- Password validation
+- Browser Geolocation API
+- Responsive menu layout
+- Feedback form with rating
+- Feedback data stored using browser `localStorage`
+- Bootstrap 5 modals for Login and Sign Up
+- Tailwind CSS used for the feedback form and responsive layout
+- **10% discount coupon using a Vue.js custom directive**
+- **Chef's Specials dynamically generated using a Vue.js custom directive**
+- Chef's Specials support **price display, Add to Order, and drag-and-drop ordering**
+
+## Menu Items
+
+The current menu includes:
+
+- Couscous Chickpea Salad – ₹249
+- Fattoush Salad – ₹229
+- Cheese Fatayer – ₹299
+- Mezze Platter – ₹249
+- Falafel Hummus Wrap – ₹249
+- Vegan Avocado Toast with Beet Hummus – ₹279
+- Turkish Coffee – ₹119
+- Classic Kunafa – ₹249
+- Turkish Affogato – ₹249
 
 ## Vue.js Practical Features
 
-This project also implements Vue.js custom directives for Practical 7.
+This project implements Vue.js 3 custom directives for Practical 7.
 
 ### 1. `v-uppercase`
 
-The custom `v-uppercase` directive is applied to the **FAT10** discount coupon. When the user clicks the coupon code, its text is converted to uppercase.
+The custom `v-uppercase` directive is applied to the **fat10** discount coupon.
+
+When the user clicks the coupon code, its text is converted to uppercase.
 
 ### 2. `v-list`
 
-The custom `v-list` directive dynamically creates the **Chef's Specials** list using data from the Vue application. Each special item includes:
+The custom `v-list` directive dynamically creates the **Chef's Specials** list using data from the Vue application.
 
-* Food image
-* Food name
+Each Chef's Special contains:
+
+- Food image
+- Food name
+- Food price
+- Add to Order button
+- Drag-and-drop functionality
 
 The current Chef's Specials are:
 
-* Creamy Alfredo Pasta
-* Strawberry Mojito
+- Eggplant Moussaka – ₹499
+- Baklava With IceCream – ₹299
 
 ## Technologies Used
 
-* HTML5
-* CSS3
-* JavaScript
-* Vue.js 3
-* Bootstrap 5
-* Browser Local Storage
-* Geolocation API
+- HTML5
+- CSS3
+- JavaScript
+- Vue.js 3
+- Bootstrap 5
+- Tailwind CSS
+- Browser Local Storage
+- Geolocation API
+- HTML5 Drag and Drop API
 
 ## Project Structure
 
@@ -59,17 +90,17 @@ RestaurantManagement/
 ├── script.js
 ├── README.md
 │
-├── Burger.jpeg
-├── Coffee.jpeg
-├── Fries.jpeg
-├── Nachos.jpeg
-├── Pizza.jpeg
-├── Sandwich.jpeg
-├── Shake.jpeg
-├── brownies.jpeg
-├── cheesecake.jpeg
-├── AlfredoPasta.jpeg
-├── StrawberryMojito.jpeg
+├── couscous-chickpea-salad.jpg
+├── fattoush-salad.jpg
+├── Cheese-Fatayer.jpeg
+├── Mezze-Platter.jpg
+├── Falafel-Hummus-Wrap.jpg
+├── Vegan-Avocado-Toast.jpg
+├── Turkish-Coffee.jpg
+├── Kunafa.jpeg
+├── Turkish_affogato.jpeg
+├── Eggplant-Moussaka.jpeg
+├── Baklava-With-IceCream.jpg
 └── TheFatTurtle.JPG
 ```
 
@@ -77,19 +108,62 @@ RestaurantManagement/
 
 ### Menu & Orders
 
-Users can browse the available menu items and add them to their order. Items can also be added using the drag-and-drop area. The selected items are displayed in the order section, along with a bill and grand total.
+Users can browse the menu and add food items to their order using the **Add to Order** button.
+
+Food items can also be dragged into the **Drag a food item here to add it to your order** area.
+
+The selected items appear in **My Orders**, where the user can:
+
+- Increase quantity
+- Decrease quantity
+- Remove an item
+
+The bill section automatically displays each item's total and the **Grand Total**.
+
+### Drag and Drop Ordering
+
+The project uses the **HTML5 Drag and Drop API**.
+
+Menu food cards are draggable, and the drop area accepts the dragged food item and adds it to the order.
+
+Chef's Specials generated by the Vue `v-list` directive are also made draggable.
 
 ### Discount Coupon
 
-The website includes a special **10% OFF** coupon. A Vue.js custom directive called `v-uppercase` makes the coupon code interactive and converts its text to uppercase when clicked.
+The website includes a **10% OFF** coupon.
+
+The Vue.js `v-uppercase` custom directive makes the coupon code interactive and converts it to uppercase when clicked.
 
 ### Chef's Specials
 
-The Chef's Specials section uses the custom `v-list` Vue directive. The directive dynamically generates special food items from the Vue application's data, including their images and names.
+The Chef's Specials section is generated dynamically using the Vue.js `v-list` custom directive.
+
+The special items are stored in the Vue application's `specialItems` data and are dynamically converted into list items containing their image, name, price, and Add to Order button.
 
 ### User Authentication
 
-Users can create an account with their name, mobile number, email, password, and address. Login and logout functionality is implemented using JavaScript and browser `localStorage`.
+Users can create an account with:
+
+- First Name
+- Mobile Number
+- Email ID
+- Password
+- Address
+
+The project validates the password and stores user information in browser `localStorage`.
+
+Users can then log in and log out using the authentication interface.
+
+### Feedback
+
+The feedback section allows users to submit:
+
+- Name
+- Phone Number
+- Rating
+- Feedback message
+
+Submitted feedback is stored in browser `localStorage`.
 
 ### Location Detection
 
@@ -107,19 +181,23 @@ Open the project folder and launch `index.html` in a web browser.
 
 For the best experience, run the project using a local development server such as **VS Code Live Server**.
 
+The project loads Bootstrap 5, Tailwind CSS, and Vue.js 3 from online CDNs, so an internet connection may be required for those libraries.
+
 ## Note
 
-This project is a **front-end demonstration**. User accounts and order data are handled locally in the browser and are not connected to a backend database.
+This project is a **front-end demonstration**.
+
+User accounts, feedback, and order data are handled locally in the browser using `localStorage`. There is no backend database or real online payment system connected to the project.
 
 ## Future Improvements
 
-* Backend integration with a database
-* Persistent order management
-* Online payment integration
-* Restaurant admin dashboard
-* Order history
-* Improved authentication and security
-* Deployment using GitHub Pages or another hosting platform
+- Backend integration with a database
+- Persistent order management
+- Online payment integration
+- Restaurant admin dashboard
+- Order history
+- Improved authentication and security
+- Deployment using GitHub Pages or another hosting platform
 
 ## Author
 
