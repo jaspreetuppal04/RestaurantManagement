@@ -742,7 +742,7 @@ button:hover {
 
     text-align: center;
 
-    background-color: #FFFDF8;
+    background-color: #6F9295;
 
     border: 2px solid #6F9295;
 
@@ -800,7 +800,7 @@ button:hover {
 
 
 #chefSpecials li:hover {
-    background-color: #36585C;
+    background-color:beige;
 
     transform: translateY(-2px);
 }
