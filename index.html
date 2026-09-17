@@ -381,7 +381,7 @@
             </div>
 
 
-            <!-- Brownie -->
+            <!-- Turkish Affogato-->
 
             <div
                 class="food-item hover:bg-[#6F9295] hover:text-white transition duration-300"
@@ -413,7 +413,109 @@
         </div>
     </section>
 
-    <!-- PRACTICAL-6: TAILWIND CSS FEEDBACK FORM -->
+
+<!-- PRACTICAL-7: VUE CUSTOM DIRECTIVES -->
+
+<div id="practical7">
+
+    <!-- V-LIST DIRECTIVE -->
+
+    <section id="chefSpecials">
+
+        <h2>👨‍🍳 Chef's Specials</h2>
+
+        <p>Handpicked special dishes prepared by our chef!</p>
+
+        <ul v-list="specialItems"></ul>
+
+    </section>
+
+      <!-- UPPERCASE DIRECTIVE -->
+
+    <section id="discountCoupon">
+
+        <h2>Special Offer</h2>
+
+        <p>Get 10% OFF on your order!</p>
+
+        <p>
+            Click the coupon code:
+            <span v-uppercase class="coupon-code">fat10</span>
+        </p>
+
+    </section>
+
+
+</div>
+
+    <!-- DRAG AND DROP AREA -->
+
+    <section>
+
+        <div
+            id="orderDropArea"
+            ondragover="allowDrop(event)"
+            ondrop="drop(event)">
+
+            Drag a food item here to add it to your order
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ORDERS SECTION -->
+
+    <section id="orders">
+
+    <h2>
+        My Orders
+    </h2>
+
+    <ul id="orderList"></ul>
+
+
+    <!-- BILL SECTION -->
+
+    <div id="billSection">
+
+        <h2>Your Bill</h2>
+
+        <div id="billDetails"></div>
+
+        <div id="grandTotal">
+
+            Grand Total: ₹<span id="totalAmount">0</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- PRACTICAL-4: GEOLOCATION API -->
+
+    <section id="location">
+
+        <h2>
+            Find Your Location
+        </h2>
+
+
+        <button
+            onclick="getLocation()">
+
+            Get My Location
+
+        </button>
+
+
+        <p id="locationResult"></p>
+
+    </section>
+
+<!-- PRACTICAL-6: TAILWIND CSS FEEDBACK FORM -->
     <!-- to make it side by side of menu -->
     <section id="feedback" class="w-full lg:w-96 flex-shrink-0"> 
      
@@ -540,110 +642,6 @@
     </section>
 
 </div>
-
-
-<!-- PRACTICAL-7: VUE CUSTOM DIRECTIVES -->
-
-<div id="practical7">
-
-    <!-- V-LIST DIRECTIVE -->
-
-    <section id="chefSpecials">
-
-        <h2>👨‍🍳 Chef's Specials</h2>
-
-        <p>Handpicked special dishes prepared by our chef!</p>
-
-        <ul v-list="specialItems"></ul>
-
-    </section>
-
-      <!-- UPPERCASE DIRECTIVE -->
-
-    <section id="discountCoupon">
-
-        <h2>Special Offer</h2>
-
-        <p>Get 10% OFF on your order!</p>
-
-        <p>
-            Click the coupon code:
-            <span v-uppercase class="coupon-code">fat10</span>
-        </p>
-
-    </section>
-
-
-</div>
-
-    <!-- DRAG AND DROP AREA -->
-
-    <section>
-
-        <div
-            id="orderDropArea"
-            ondragover="allowDrop(event)"
-            ondrop="drop(event)">
-
-            Drag a food item here to add it to your order
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ORDERS SECTION -->
-
-    <section id="orders">
-
-    <h2>
-        My Orders
-    </h2>
-
-    <ul id="orderList"></ul>
-
-
-    <!-- BILL SECTION -->
-
-    <div id="billSection">
-
-        <h2>Your Bill</h2>
-
-        <div id="billDetails"></div>
-
-        <div id="grandTotal">
-
-            Grand Total: ₹<span id="totalAmount">0</span>
-
-        </div>
-
-    </div>
-
-</section>
-
-    <!-- PRACTICAL-4: GEOLOCATION API -->
-
-    <section id="location">
-
-        <h2>
-            Find Your Location
-        </h2>
-
-
-        <button
-            onclick="getLocation()">
-
-            Get My Location
-
-        </button>
-
-
-        <p id="locationResult"></p>
-
-    </section>
-
-
 
     <!-- CONTACT SECTION -->
 
