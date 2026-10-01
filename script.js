@@ -321,54 +321,152 @@ function drop(event) {
 }
 
 
+/* =====================================================
+   PRACTICAL: GEOLOCATION API
+   ===================================================== */
 
-/* Practical 4: GEOLOCATION API */
+
+/* DEFAULT CAFE LOCATION */
+
+const cafeLatitude = 23.0401;
+const cafeLongitude = 72.5078;
+
+
+/* GET CUSTOMER LOCATION */
 
 function getLocation() {
 
-    const locationResult =
-        document.getElementById("locationResult");
+    const result =
+        document.getElementById(
+            "locationResult"
+        );
 
 
     /* Check browser support */
 
     if (!navigator.geolocation) {
 
-        locationResult.textContent =
+        result.textContent =
             "Geolocation is not supported by your browser.";
 
         return;
-
     }
 
 
-    locationResult.textContent =
-        "Getting your location...";
+    result.textContent =
+        "Getting your current location...";
 
+
+    /* Get current location */
 
     navigator.geolocation.getCurrentPosition(
 
         function (position) {
 
-            const latitude =
+            const userLatitude =
                 position.coords.latitude;
 
-            const longitude =
+            const userLongitude =
                 position.coords.longitude;
 
 
-            locationResult.innerHTML =
-                "Latitude: " +
-                latitude +
-                "<br>Longitude: " +
-                longitude;
+            /* Calculate distance */
+
+            const distance =
+                calculateDistance(
+                    userLatitude,
+                    userLongitude,
+                    cafeLatitude,
+                    cafeLongitude
+                );
+
+
+            /* Estimate travel time */
+
+            const estimatedTime =
+                Math.round(
+                    (distance / 25) * 60
+                );
+
+
+            /* Display result */
+
+            result.innerHTML =
+
+                "<strong>Distance to The Fat Turtle Cafe:</strong> " +
+
+                distance.toFixed(2) +
+
+                " km" +
+
+                "<br>" +
+
+                "<strong>Approximate travel time:</strong> " +
+
+                estimatedTime +
+
+                " minutes";
+
+
+            /* Google Maps directions */
+
+            const directions =
+                document.getElementById(
+                    "directionsLink"
+                );
+
+
+            directions.href =
+
+                "https://www.google.com/maps/dir/?api=1" +
+
+                "&origin=" +
+
+                userLatitude +
+                "," +
+                userLongitude +
+
+                "&destination=" +
+
+                cafeLatitude +
+                "," +
+                cafeLongitude;
+
+
+            directions.style.display =
+                "inline-block";
 
         },
 
-        function () {
 
-            locationResult.textContent =
-                "Unable to get your location.";
+        function (error) {
+
+            if (error.code === 1) {
+
+                result.textContent =
+                    "Location permission was denied. Please allow location access.";
+
+            }
+
+            else if (error.code === 2) {
+
+                result.textContent =
+                    "Your location could not be determined.";
+
+            }
+
+            else if (error.code === 3) {
+
+                result.textContent =
+                    "Location request timed out. Please try again.";
+
+            }
+
+            else {
+
+                result.textContent =
+                    "Unable to get your location.";
+            }
 
         }
 
@@ -376,6 +474,80 @@ function getLocation() {
 
 }
 
+
+/* =====================================================
+   DISTANCE CALCULATION
+   ===================================================== */
+
+function calculateDistance(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+) {
+
+    const earthRadius = 6371;
+
+
+    const latitudeDifference =
+        toRadians(lat2 - lat1);
+
+
+    const longitudeDifference =
+        toRadians(lon2 - lon1);
+
+
+    const a =
+
+        Math.sin(
+            latitudeDifference / 2
+        ) *
+
+        Math.sin(
+            latitudeDifference / 2
+        )
+
+        +
+
+        Math.cos(
+            toRadians(lat1)
+        ) *
+
+        Math.cos(
+            toRadians(lat2)
+        ) *
+
+        Math.sin(
+            longitudeDifference / 2
+        ) *
+
+        Math.sin(
+            longitudeDifference / 2
+        );
+
+
+    const c =
+
+        2 *
+
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
+
+
+    return earthRadius * c;
+}
+
+
+/* CONVERT DEGREES TO RADIANS */
+
+function toRadians(degrees) {
+
+    return degrees *
+        Math.PI /
+        180;
+}
 
 
 /* =====================================================

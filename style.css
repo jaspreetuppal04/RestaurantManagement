@@ -819,3 +819,101 @@ button:hover {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+
+/* =====================================================
+   LOCATION
+   ===================================================== */
+
+#cafeAddressCard {
+
+    max-width: 650px;
+
+    margin: 20px auto;
+
+    padding: 22px;
+
+    background-color: #FFFDF8;
+
+    border: 1px solid #E2D6C3;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 8px
+        rgba(38, 51, 42, 0.10);
+}
+
+
+#cafeAddressCard .location-label {
+
+    margin: 0 0 5px;
+
+    color: #8B5E34;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+}
+
+
+#cafeAddress {
+
+    margin: 0 0 18px;
+
+    color: #183C32;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+
+#locationResult {
+
+    max-width: 650px;
+
+    margin: 20px auto;
+
+    padding: 15px;
+
+    background-color: #FFFDF8;
+
+    border-radius: 8px;
+
+    line-height: 1.7;
+
+    color: #8B5E34;
+
+    font-weight: bold;
+}
+
+
+#directionsLink {
+
+    display: inline-block;
+
+    margin-top: 5px;
+
+    padding: 10px 16px;
+
+    background-color: #183C32;
+
+    color: white;
+
+    border-radius: 6px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+
+#directionsLink:hover {
+
+    background-color: #36585C;
+
+    color: white;
+}

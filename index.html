@@ -496,24 +496,45 @@
 
     <!-- PRACTICAL-4: GEOLOCATION API -->
 
-    <section id="location">
+<section id="location">
 
-        <h2>
-            Find Your Location
-        </h2>
+    <h2>Find Us</h2>
 
+    <div id="cafeAddressCard">
+
+        <p class="location-label">
+            OUR CAFE
+        </p>
+
+        <p id="cafeAddress">
+            The Fat Turtle Cafe,
+            Sindhu Bhavan Road,
+            Near Taj Skyline, Ahmedabad
+        </p>
 
         <button
+            type="button"
             onclick="getLocation()">
 
-            Get My Location
+            📍 Use My Current Location
 
         </button>
 
+    </div>
 
-        <p id="locationResult"></p>
+    <p id="locationResult"></p>
 
-    </section>
+    <a
+        id="directionsLink"
+        href="#"
+        target="_blank"
+        style="display:none;">
+
+        Open Directions in Google Maps
+
+    </a>
+
+</section>
 
 <!-- PRACTICAL-6: TAILWIND CSS FEEDBACK FORM -->
     <!-- to make it side by side of menu -->
