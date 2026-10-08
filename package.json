@@ -1,0 +1,24 @@
+{
+  "name": "restaurant_mngmnt",
+  "version": "1.0.0",
+  "description": "A responsive and interactive restaurant and café website built using **HTML5, CSS3, JavaScript, Bootstrap 5, Tailwind CSS, and Vue.js 3**.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaspreetuppal04/RestaurantManagement.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jaspreetuppal04/RestaurantManagement/issues"
+  },
+  "homepage": "https://github.com/jaspreetuppal04/RestaurantManagement#readme",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}

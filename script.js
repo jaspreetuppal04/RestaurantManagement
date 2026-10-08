@@ -1096,12 +1096,12 @@ const app = createApp({
 specialItems: [
     {
         name: "Eggplant Moussaka",
-        image: "Eggplant-Moussaka.jpeg",
+        image: "Images/Eggplant-Moussaka.jpeg",
         price: 499
     },
     {
         name: "Baklava With IceCream",
-        image: "Baklava-With-IceCream.jpg",
+        image: "Images/Baklava-With-IceCream.jpg",
         price: 299
     }
 ]
