@@ -917,3 +917,47 @@ button:hover {
 
     color: white;
 }
+
+/* ACCOUNT DROPDOWN + ACCOUNT PAGE */
+#userAccount { position: absolute; top: 20px; right: 25px; z-index: 8; display: none; }
+.account-menu-button {
+    background: rgba(24, 60, 50, 0.92);
+    color: #fff; border: 1px solid rgba(255,255,255,.35);
+    padding: 9px 16px; border-radius: 7px; font-weight: bold;
+}
+.account-menu-button:hover { background: #36585C; color: #fff; }
+#userWelcome { color: inherit; background: transparent; padding: 0; }
+#userAccount .dropdown-menu { min-width: 190px; padding: 7px; border: 1px solid #E2D6C3; border-radius: 9px; box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+#userAccount .dropdown-item { border-radius: 5px; padding: 9px 12px; font-weight: 600; }
+.account-page { min-height: 420px; padding: 34px 20px 50px; max-width: 1000px; margin: 0 auto; }
+.account-page[hidden], #accountDetails[hidden], #accountLoading[hidden], #accountError[hidden] { display: none !important; }
+.account-page-heading { margin-bottom: 22px; }
+.account-page-heading h2 { margin: 18px 0 5px; color: #183C32; }
+.account-page-heading p { color: #536765; }
+.account-back-button { background: transparent; border: 1px solid #36585C; color: #36585C; padding: 8px 12px; }
+.account-back-button:hover { background: #36585C; color: white; }
+.account-card { max-width: 650px; background: #FFFDF8; border: 1px solid #E2D6C3; border-radius: 14px; padding: 26px; box-shadow: 0 4px 14px rgba(38,51,42,.08); }
+.account-avatar { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #36585C; color: white; font-size: 22px; font-weight: bold; margin-bottom: 15px; }
+.account-card h3 { color: #183C32; margin-bottom: 2px; }
+.account-subtitle { color: #7A8A86; margin-bottom: 20px; }
+.account-detail-row { display: flex; justify-content: space-between; gap: 18px; padding: 13px 0; border-bottom: 1px solid #E8E1D5; }
+.account-detail-row span { color: #66736E; }
+.account-detail-row strong { color: #26332A; text-align: right; overflow-wrap: anywhere; }
+.account-primary-button, #placeOrderButton { margin-top: 20px; background: #183C32; color: white; }
+.account-primary-button:hover, #placeOrderButton:hover { background: #36585C; color: white; }
+.account-error { color: #9b2c2c; padding: 12px; }
+.place-order-row { margin-top: 12px; }
+#placeOrderMessage { margin-top: 8px; }
+.order-history { margin-top: 28px; padding: 20px; background: #FFFDF8; border: 1px solid #E2D6C3; border-radius: 10px; }
+.order-history h3 { color: #183C32; font-size: 1.25rem; }
+.saved-order { padding: 14px 0; border-bottom: 1px solid #E8E1D5; }
+.saved-order:last-child { border-bottom: 0; }
+.saved-order-heading { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-weight: bold; }
+.saved-order-items { color: #536765; margin-top: 7px; }
+.order-status { display: inline-block; border-radius: 20px; background: #e7f2e9; color: #245a35; padding: 3px 10px; font-size: .82rem; }
+@media screen and (max-width: 600px) {
+  #userAccount { top: 12px; right: 12px; }
+  .account-menu-button { padding: 7px 10px; font-size: 12px; }
+  .account-detail-row { flex-direction: column; gap: 4px; }
+  .account-detail-row strong { text-align: left; }
+}

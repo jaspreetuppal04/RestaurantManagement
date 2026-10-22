@@ -107,25 +107,49 @@
         </div>
 
 
-        <!-- LOGGED-IN USER -->
+        <!-- LOGGED-IN USER: ACCOUNT DROPDOWN -->
 
-        <div id="userAccount">
-
-            <span id="userWelcome"></span>
-
-
+        <div id="userAccount" class="dropdown">
             <button
+                class="account-menu-button dropdown-toggle"
                 type="button"
-                id="logoutButton"
-                onclick="logoutUser()">
-
-                Logout
-
+                id="accountDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <span id="userWelcome">My Account</span>
             </button>
 
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                <li><button class="dropdown-item" type="button" onclick="openAccountPage()">My Account</button></li>
+                <li><button class="dropdown-item" type="button" onclick="openMyOrders()">My Orders</button></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><button class="dropdown-item text-danger" type="button" onclick="logoutUser()">Logout</button></li>
+            </ul>
         </div>
 
     </header>
+
+    <!-- MY ACCOUNT PAGE/PANEL (shown only when selected by a logged-in customer) -->
+    <section id="accountPage" class="account-page" hidden>
+        <div class="account-page-heading">
+            <button type="button" class="account-back-button" onclick="closeAccountPage()">← Back to The Fat Turtle</button>
+            <h2>My Account</h2>
+            <p>Manage and review your customer details.</p>
+        </div>
+        <div id="accountLoading" class="account-card">Loading your account...</div>
+        <div id="accountDetails" class="account-card" hidden>
+            <div class="account-avatar" id="accountInitials">FT</div>
+            <h3 id="accountFullName"></h3>
+            <p class="account-subtitle">The Fat Turtle Customer</p>
+            <div class="account-detail-row"><span>Name</span><strong id="accountName"></strong></div>
+            <div class="account-detail-row"><span>Email</span><strong id="accountEmail"></strong></div>
+            <div class="account-detail-row"><span>Mobile</span><strong id="accountMobile"></strong></div>
+            <div class="account-detail-row"><span>Address</span><strong id="accountAddress"></strong></div>
+            <button type="button" class="account-primary-button" onclick="openMyOrders()">View My Orders</button>
+        </div>
+        <p id="accountError" class="account-error" role="alert" hidden></p>
+    </section>
+
 
 
      <!-- MENU + FEEDBACK CONTAINER -->
@@ -490,6 +514,16 @@
 
         </div>
 
+        <div class="place-order-row">
+            <button type="button" id="placeOrderButton" onclick="placeOrder()">Place Order</button>
+            <p id="placeOrderMessage" role="status"></p>
+        </div>
+
+        <div id="orderHistory" class="order-history">
+            <h3>Previous Orders</h3>
+            <div id="orderHistoryList">Log in to view your saved orders.</div>
+        </div>
+
     </div>
 
 </section>
@@ -727,6 +761,7 @@
                 <div class="modal-body">
 
                     <form id="signupForm">
+                    <div id="signupMessage" class="mb-3" role="status"></div>
 
 
                         <!-- First Name -->
@@ -908,6 +943,7 @@
                 <div class="modal-body">
 
                     <form id="loginForm">
+                        <div id="loginMessage" class="mb-3" role="status"></div>
 
 
                         <!-- Email -->

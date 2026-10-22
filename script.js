@@ -1,29 +1,17 @@
 /* FOOD PRICES */
 
 const foodPrices = {
-
-    "couscous-chickpea-salad": 249,
-
-    "Cheese Fatayer": 299,
-
-    "Falafel Hummus Wrap ": 249,
-
-    "Vegan Avocado Toast with Beet Hummus": 279,
-
-    "Mezze Platter": 249,
-
-    "Turkish Coffee": 199,
-
+    "Couscous Chickpea Salad": 249,
     "Fattoush Salad": 229,
-
-    "Classic Kunafa": 199,
-
-    "Turkish Affogato": 149,
-
-    "Eggplant Moussaka": 399,
-
-    "Baklava With IceCream": 199 
-
+    "Cheese Fatayer": 299,
+    "Mezze Platter": 249,
+    "Falafel Hummus Wrap": 249,
+    "Vegan Avocado Toast with Beet Hummus": 279,
+    "Turkish Coffee": 119,
+    "Classic Kunafa": 249,
+    "Turkish Affogato": 249,
+    "Eggplant Moussaka": 499,
+    "Baklava With IceCream": 299
 };
 
 
@@ -550,468 +538,350 @@ function toRadians(degrees) {
 }
 
 
-/* =====================================================
-   SIGN UP
-   ===================================================== */
 
-const signupForm =
-    document.getElementById("signupForm");
 
+/* AUTHENTICATION: MYSQL BACKEND + SERVER SESSION */
+
+const API_BASE = `http://${window.location.hostname || "localhost"}:3000`;
+
+async function apiRequest(path, options = {}) {
+    const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        credentials: "include",
+        headers: {
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...(options.headers || {})
+        }
+    });
+
+    let result = {};
+    try { result = await response.json(); } catch (_) {}
+    if (!response.ok) {
+        throw new Error(result.message || "Request failed.");
+    }
+    return result;
+}
+
+const signupForm = document.getElementById("signupForm");
 
 if (signupForm) {
+    signupForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    signupForm.addEventListener(
-        "submit",
-        function (event) {
+        const message = document.getElementById("signupMessage");
+        const button = signupForm.querySelector('button[type="submit"]');
+        const customer = {
+            first_name: document.getElementById("firstName").value.trim(),
+            mobile: document.getElementById("mobile").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("signupPassword").value,
+            address: document.getElementById("address").value.trim()
+        };
 
-            /* Prevent page refresh */
+        if (message) {
+            message.className = "mb-3";
+            message.textContent = "Creating account...";
+        }
+        if (button) button.disabled = true;
 
-            event.preventDefault();
+        try {
+            const result = await apiRequest("/api/signup", {
+                method: "POST",
+                body: JSON.stringify(customer)
+            });
 
-
-            /* Get form values */
-
-            const firstName =
-                document
-                    .getElementById("firstName")
-                    .value
-                    .trim();
-
-
-            const mobile =
-                document
-                    .getElementById("mobile")
-                    .value
-                    .trim();
-
-
-            const email =
-                document
-                    .getElementById("email")
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById("signupPassword")
-                    .value;
-
-
-            const address =
-                document
-                    .getElementById("address")
-                    .value
-                    .trim();
-
-
-            /* Check empty fields */
-
-            if (
-                firstName === "" ||
-                mobile === "" ||
-                email === "" ||
-                password === "" ||
-                address === ""
-            ) {
-
-                alert(
-                    "Please fill in all the fields."
-                );
-
-                return;
-
+            if (message) {
+                message.className = "mb-3 text-success";
+                message.textContent = result.message;
             }
-
-
-            /* Password validation */
-
-            if (password.length < 6) {
-
-                alert(
-                    "Password must contain at least 6 characters."
-                );
-
-                return;
-
-            }
-
-
-            /* PRACTICAL-4: LOCAL STORAGE */
-
-            /* Get existing user */
-
-            const savedUser =
-                localStorage.getItem("fatTurtleUser");
-
-
-            if (savedUser) {
-
-                const existingUser =
-                    JSON.parse(savedUser);
-
-
-                /* Check duplicate email */
-
-                if (
-                    existingUser.email.toLowerCase() ===
-                    email.toLowerCase()
-                ) {
-
-                    alert(
-                        "An account with this email already exists. Please login."
-                    );
-
-                    return;
-
-                }
-
-            }
-
-
-            /* Create user */
-
-            const user = {
-
-                firstName: firstName,
-
-                mobile: mobile,
-
-                email: email,
-
-                password: password,
-
-                address: address
-
-            };
-
-
-            /* Save user */
-
-            localStorage.setItem(
-                "fatTurtleUser",
-                JSON.stringify(user)
-            );
-
-
-            /* Make sure user is logged out */
-
-            localStorage.removeItem(
-                "fatTurtleLoggedIn"
-            );
-
-
-            /* Success */
-
-            alert(
-                "Sign Up successful! You can now login."
-            );
-
-
-            /* Clear form */
 
             signupForm.reset();
 
-
-            /* PRACTICAL-5: BOOTSTRAP 5 MODAL */
-
-            const signupModalElement =
-                document.getElementById("signupModal");
-
-
-            if (signupModalElement) {
-
-                const signupModal =
-                    bootstrap.Modal.getInstance(
-                        signupModalElement
-                    );
-
-
-                if (signupModal) {
-
-                    signupModal.hide();
-
-                }
-
+            // Close signup modal, then open login so the new customer can sign in.
+            const signupModalElement = document.getElementById("signupModal");
+            if (signupModalElement && window.bootstrap) {
+                const modal = bootstrap.Modal.getInstance(signupModalElement);
+                if (modal) modal.hide();
             }
-
+            alert("Account created successfully. Please log in.");
+            const loginModalElement = document.getElementById("loginModal");
+            if (loginModalElement && window.bootstrap) {
+                new bootstrap.Modal(loginModalElement).show();
+            }
+        } catch (error) {
+            if (message) {
+                message.className = "mb-3 text-danger";
+                message.textContent = error.message;
+            } else {
+                alert(error.message);
+            }
+        } finally {
+            if (button) button.disabled = false;
         }
-    );
-
+    });
 }
 
-
-
-/* LOGIN */
-
-const loginForm =
-    document.getElementById("loginForm");
-
+const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    loginForm.addEventListener(
-        "submit",
-        function (event) {
+        const message = document.getElementById("loginMessage");
+        const button = loginForm.querySelector('button[type="submit"]');
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
 
-            /* Prevent page refresh */
-
-            event.preventDefault();
-
-
-            /* Get login details */
-
-            const email =
-                document
-                    .getElementById("loginEmail")
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById("loginPassword")
-                    .value;
-
-
-            /* Get saved account */
-
-            const savedUser =
-                localStorage.getItem("fatTurtleUser");
-
-
-            /* No account */
-
-            if (!savedUser) {
-
-                alert(
-                    "No account found. Please Sign Up first."
-                );
-
-                return;
-
-            }
-
-
-            /* Convert saved data to object */
-
-            const user =
-                JSON.parse(savedUser);
-
-
-            /* Check email AND password */
-
-            if (
-                email.toLowerCase() ===
-                user.email.toLowerCase()
-                &&
-                password ===
-                user.password
-            ) {
-
-                /* Login successful */
-
-                localStorage.setItem(
-                    "fatTurtleLoggedIn",
-                    "true"
-                );
-
-
-                /* Clear login form */
-
-                loginForm.reset();
-
-
-                /* Close login modal */
-
-                const loginModalElement =
-                    document.getElementById("loginModal");
-
-
-                if (loginModalElement) {
-
-                    const loginModal =
-                        bootstrap.Modal.getInstance(
-                            loginModalElement
-                        );
-
-
-                    if (loginModal) {
-
-                        loginModal.hide();
-
-                    }
-
-                }
-
-
-                /* Update header */
-
-                showLoggedInUser();
-
-
-                /* Success message */
-
-                alert(
-                    "Login successful!"
-                );
-
-            }
-
-            else {
-
-                /* Wrong credentials */
-
-                alert(
-                    "Invalid email or password."
-                );
-
-            }
-
+        if (message) {
+            message.className = "mb-3";
+            message.textContent = "Signing in...";
         }
-    );
+        if (button) button.disabled = true;
 
+        try {
+            const result = await apiRequest("/api/login", {
+                method: "POST",
+                body: JSON.stringify({ email, password })
+            });
+
+            // This is display-only cache. The server-side session is the authority.
+            localStorage.setItem("fatTurtleUser", JSON.stringify(result.user));
+            loginForm.reset();
+
+            const modalElement = document.getElementById("loginModal");
+            if (modalElement && window.bootstrap) {
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) modal.hide();
+            }
+
+            await showLoggedInUser();
+            alert(`Welcome, ${result.user.firstName}!`);
+        } catch (error) {
+            if (message) {
+                message.className = "mb-3 text-danger";
+                message.textContent = error.message;
+            } else {
+                alert(error.message);
+            }
+        } finally {
+            if (button) button.disabled = false;
+        }
+    });
 }
 
-
-
-/* LOGOUT */
-
-function logoutUser() {
-
-    /* Remove only login status */
-
-    localStorage.removeItem(
-        "fatTurtleLoggedIn"
-    );
-
-
-    /* Update header */
-
-    showLoggedInUser();
-
-
-    /* Message */
-
-    alert(
-        "You have been logged out successfully."
-    );
-
-}
-
-
-
-/* DISPLAY LOGGED-IN USER */
-
-function showLoggedInUser() {
-
-    /* Get saved account */
-
-    const savedUser =
-        localStorage.getItem("fatTurtleUser");
-
-
-    /* Get login status */
-
-    const loggedIn =
-        localStorage.getItem("fatTurtleLoggedIn");
-
-
-    /* Get header elements */
-
-    const authButtons =
-        document.getElementById("authButtons");
-
-
-    const userAccount =
-        document.getElementById("userAccount");
-
-
-    const welcome =
-        document.getElementById("userWelcome");
-
-
-    /* USER IS LOGGED IN */
-
-    if (
-        savedUser &&
-        loggedIn === "true"
-    ) {
-
-        const user =
-            JSON.parse(savedUser);
-
-
-        /* Hide Login / Sign Up */
-
-        if (authButtons) {
-
-            authButtons.style.display =
-                "none";
-
-        }
-
-
-        /* Show user account */
-
-        if (userAccount) {
-
-            userAccount.style.display =
-                "flex";
-
-        }
-
-
-        /* Show user's name */
-
-        if (welcome) {
-
-            welcome.textContent =
-                "Welcome, " +
-                user.firstName;
-
-        }
-
+async function logoutUser() {
+    try {
+        await apiRequest("/api/logout", { method: "POST" });
+    } catch (error) {
+        console.error("Logout error:", error);
     }
 
-
-    /* USER IS LOGGED OUT */
-
-    else {
-
-        /* Show Login / Sign Up */
-
-        if (authButtons) {
-
-            authButtons.style.display =
-                "flex";
-
-        }
-
-
-        /* Hide user account */
-
-        if (userAccount) {
-
-            userAccount.style.display =
-                "none";
-
-        }
-
-    }
-
+    localStorage.removeItem("fatTurtleUser");
+    localStorage.removeItem("fatTurtleLoggedIn");
+    closeAccountPage();
+    showLoggedOutHeader();
+    const history = document.getElementById("orderHistoryList");
+    if (history) history.textContent = "Log in to view your saved orders.";
+    alert("You have been logged out successfully.");
 }
 
+function showLoggedOutHeader() {
+    const authButtons = document.getElementById("authButtons");
+    const userAccount = document.getElementById("userAccount");
+    if (authButtons) authButtons.style.display = "flex";
+    if (userAccount) userAccount.style.display = "none";
+}
 
+async function showLoggedInUser() {
+    const authButtons = document.getElementById("authButtons");
+    const userAccount = document.getElementById("userAccount");
+    const welcome = document.getElementById("userWelcome");
 
-/* CHECK LOGIN WHEN PAGE LOADS */
+    try {
+        const result = await apiRequest("/api/me");
+        const user = result.user;
+        localStorage.setItem("fatTurtleUser", JSON.stringify(user));
+        localStorage.setItem("fatTurtleLoggedIn", "true");
 
-showLoggedInUser();
+        if (authButtons) authButtons.style.display = "none";
+        if (userAccount) userAccount.style.display = "block";
+        if (welcome) welcome.textContent = `Welcome, ${user.firstName}`;
+        return user;
+    } catch (_) {
+        localStorage.removeItem("fatTurtleLoggedIn");
+        localStorage.removeItem("fatTurtleUser");
+        showLoggedOutHeader();
+        return null;
+    }
+}
 
-/* CHECK LOGIN WHEN PAGE LOADS */
+async function openAccountPage() {
+    const accountPage = document.getElementById("accountPage");
+    const loading = document.getElementById("accountLoading");
+    const details = document.getElementById("accountDetails");
+    const errorBox = document.getElementById("accountError");
 
-showLoggedInUser();
+    const userAccount = await showLoggedInUser();
+    if (!userAccount) {
+        alert("Please log in to view your account.");
+        const modalElement = document.getElementById("loginModal");
+        if (modalElement && window.bootstrap) new bootstrap.Modal(modalElement).show();
+        return;
+    }
 
+    // Keep the existing restaurant page intact; only switch its main content visibility.
+    document.querySelectorAll("body > header, body > .menu-feedback-container, body > section:not(#accountPage)")
+        .forEach(element => element.dataset.accountHidden = element.style.display === "none" ? "yes" : "no");
+    document.querySelectorAll("body > header, body > .menu-feedback-container, body > section:not(#accountPage)")
+        .forEach(element => element.style.display = "none");
+
+    accountPage.hidden = false;
+    loading.hidden = false;
+    details.hidden = true;
+    errorBox.hidden = true;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    try {
+        const result = await apiRequest("/api/me");
+        const user = result.user;
+        document.getElementById("accountFullName").textContent = user.firstName || "";
+        document.getElementById("accountName").textContent = user.firstName || "";
+        document.getElementById("accountEmail").textContent = user.email || "";
+        document.getElementById("accountMobile").textContent = user.mobile || "";
+        document.getElementById("accountAddress").textContent = user.address || "";
+        document.getElementById("accountInitials").textContent =
+            (user.firstName || "FT").split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase();
+        loading.hidden = true;
+        details.hidden = false;
+    } catch (error) {
+        loading.hidden = true;
+        errorBox.textContent = error.message;
+        errorBox.hidden = false;
+    }
+}
+
+function closeAccountPage() {
+    const accountPage = document.getElementById("accountPage");
+    if (accountPage) accountPage.hidden = true;
+    document.querySelectorAll("body > header, body > .menu-feedback-container, body > section:not(#accountPage)")
+        .forEach(element => {
+            if (element.dataset.accountHidden !== undefined) {
+                element.style.display = "";
+                delete element.dataset.accountHidden;
+            }
+        });
+}
+
+function openMyOrders() {
+    closeAccountPage();
+    const ordersSection = document.getElementById("orders");
+    if (ordersSection) ordersSection.scrollIntoView({ behavior: "smooth" });
+    loadOrderHistory();
+}
+
+async function placeOrder() {
+    const message = document.getElementById("placeOrderMessage");
+    const button = document.getElementById("placeOrderButton");
+
+    if (!orders.length) {
+        if (message) {
+            message.className = "text-danger";
+            message.textContent = "Your cart is empty. Add food items before placing an order.";
+        }
+        return;
+    }
+
+    if (button) button.disabled = true;
+    if (message) {
+        message.className = "";
+        message.textContent = "Saving your order...";
+    }
+
+    try {
+        const result = await apiRequest("/api/orders", {
+            method: "POST",
+            body: JSON.stringify({
+                items: orders.map(item => ({ name: item.name, quantity: item.quantity }))
+            })
+        });
+
+        orders = [];
+        updateOrders();
+        if (message) {
+            message.className = "text-success";
+            message.textContent = `${result.message} Order #${result.orderId}, total ₹${result.totalAmount}.`;
+        }
+        await loadOrderHistory();
+    } catch (error) {
+        if (message) {
+            message.className = "text-danger";
+            message.textContent = error.message;
+        }
+        if (error.message.toLowerCase().includes("log in")) {
+            const modalElement = document.getElementById("loginModal");
+            if (modalElement && window.bootstrap) new bootstrap.Modal(modalElement).show();
+        }
+    } finally {
+        if (button) button.disabled = false;
+    }
+}
+
+async function loadOrderHistory() {
+    const container = document.getElementById("orderHistoryList");
+    if (!container) return;
+    container.textContent = "Loading saved orders...";
+
+    try {
+        const result = await apiRequest("/api/orders");
+        if (!result.orders.length) {
+            container.textContent = "You have not placed any orders yet.";
+            return;
+        }
+
+        container.replaceChildren();
+        result.orders.forEach(order => {
+            const card = document.createElement("div");
+            card.className = "saved-order";
+
+            const heading = document.createElement("div");
+            heading.className = "saved-order-heading";
+
+            const title = document.createElement("span");
+            title.textContent = `Order #${order.id} · ₹${Number(order.totalAmount).toFixed(2)}`;
+
+            const status = document.createElement("span");
+            status.className = "order-status";
+            status.textContent = order.status;
+
+            const date = document.createElement("div");
+            date.className = "text-muted small";
+            date.textContent = order.createdAt ? new Date(order.createdAt).toLocaleString() : "";
+
+            const items = document.createElement("div");
+            items.className = "saved-order-items";
+            items.textContent = order.items.map(item =>
+                `${item.food_name} × ${item.quantity} (₹${Number(item.item_total).toFixed(2)})`
+            ).join(" · ");
+
+            heading.append(title, status);
+            card.append(heading, date, items);
+            container.appendChild(card);
+        });
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+// Verify the server session every time the page opens; localStorage is not authentication.
+document.addEventListener("DOMContentLoaded", async () => {
+    await showLoggedInUser();
+    const history = document.getElementById("orderHistoryList");
+    if (history) {
+        const user = await apiRequest("/api/me").then(result => result.user).catch(() => null);
+        if (user) loadOrderHistory();
+        else history.textContent = "Log in to view your saved orders.";
+    }
+});
 
 /* PRACTICAL-6: FEEDBACK FORM + LOCAL STORAGE*/
 
