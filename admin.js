@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:3000';
+// Use the same hostname as the page (localhost or 127.0.0.1) so Safari
+// treats the session cookie as first-party and sends it on subsequent API calls.
+const API_BASE = `${window.location.protocol}//${window.location.hostname}:3000`;
 const $ = (id) => document.getElementById(id);
 let allOrders = [];
 
@@ -8,8 +10,8 @@ async function api(path, options = {}) {
     credentials: 'include',
     headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) }
   });
-  let data;
-  try { data = await response.json(); } catch { data = {}; }
+  let data = {};
+  try { data = await response.json(); } catch {}
   if (!response.ok) {
     const error = new Error(data.message || `Request failed (${response.status})`);
     error.status = response.status;
@@ -17,12 +19,25 @@ async function api(path, options = {}) {
   }
   return data;
 }
-function showNotice(message, kind = 'error') {
-  const notice = $('notice');
-  notice.textContent = message;
-  notice.className = `notice ${kind}`;
+function showNotice(message, kind = 'error', target = 'notice') {
+  const el = $(target);
+  if (!el) return;
+  el.textContent = message;
+  el.className = `notice ${kind}`;
 }
-function clearNotice() { $('notice').className = 'notice hidden'; }
+function clearNotice(target = 'notice') { if ($(target)) $(target).className = 'notice hidden'; }
+function setLoginMode() {
+  document.body.classList.add('login-mode');
+  document.body.classList.remove('authenticated');
+  $('loginPanel').style.display = 'grid';
+  $('dashboardContent').style.display = 'none';
+}
+function setAuthenticatedMode() {
+  document.body.classList.remove('login-mode');
+  document.body.classList.add('authenticated');
+  $('loginPanel').style.display = 'none';
+  $('dashboardContent').style.display = 'block';
+}
 function money(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }) : '—';
@@ -36,7 +51,6 @@ function fmtDate(value) {
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 }
-function normStatus(value) { return String(value || 'Placed').trim(); }
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -45,6 +59,7 @@ function getOrderItems(order) {
   if (Array.isArray(items) && items.length) return items.map(it => `${it.food_name || it.name || 'Item'} × ${it.quantity || 1}`).join(', ');
   return order.item_summary || order.items_summary || '—';
 }
+function normStatus(value) { return String(value || 'Placed').trim(); }
 function badge(status) {
   const cls = status.toLowerCase().replace(/[^a-z]/g, '');
   return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
@@ -83,11 +98,11 @@ async function loadDashboard() {
   try {
     const me = await api('/api/me');
     if (!me.user || me.user.role !== 'admin') {
-      $('loginPanel').classList.remove('hidden');
-      showNotice('This account is not an administrator. Sign in with an account whose database role is "admin".');
+      setLoginMode();
+      showNotice('This account is not an administrator. Sign in with an account whose database role is "admin".', 'error', 'loginNotice');
       return;
     }
-    $('loginPanel').classList.add('hidden');
+    setAuthenticatedMode();
     const [stats, orderData] = await Promise.all([api('/api/admin/dashboard'), api('/api/admin/orders')]);
     setStats(stats);
     allOrders = Array.isArray(orderData) ? orderData : (Array.isArray(orderData.orders) ? orderData.orders : []);
@@ -101,11 +116,10 @@ async function loadDashboard() {
     }
     $('lastUpdated').textContent = `Updated ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'})}`;
   } catch (e) {
-    $('loginPanel').classList.remove('hidden');
-    $('ordersBody').innerHTML = '<tr><td colspan="6" class="empty">Sign in to load orders.</td></tr>';
-    if (e.status === 401) showNotice('Please sign in below. Use an existing account with role "admin".');
-    else if (e.status === 403) showNotice('Access denied. Your account is not an admin. Promote the intended account in phpMyAdmin, then sign in again.');
-    else showNotice(`${e.message}. Check that the backend is running at ${API_BASE}.`);
+    setLoginMode();
+    if (e.status === 401) showNotice('Sign in with your administrator account to continue.', 'error', 'loginNotice');
+    else if (e.status === 403) showNotice('Access denied. Your account does not have the admin role.', 'error', 'loginNotice');
+    else showNotice(`${e.message}. Check that the backend is running at ${API_BASE}.`, 'error', 'loginNotice');
   } finally {
     $('refreshBtn').disabled = false;
     $('refreshBtn').textContent = '↻ Refresh';
@@ -113,7 +127,7 @@ async function loadDashboard() {
 }
 $('adminLoginForm').addEventListener('submit', async (event) => {
   event.preventDefault();
-  clearNotice();
+  clearNotice('loginNotice');
   const button = $('adminLoginForm').querySelector('button[type="submit"]');
   button.disabled = true;
   button.textContent = 'Signing in…';
@@ -122,19 +136,25 @@ $('adminLoginForm').addEventListener('submit', async (event) => {
       method: 'POST',
       body: JSON.stringify({ email: $('loginEmail').value.trim(), password: $('loginPassword').value })
     });
-    if (!result.user || result.user.role !== 'admin') {
+    let user = result.user;
+    if (!user || !user.role) {
+      const me = await api('/api/me');
+      user = me.user;
+    }
+    if (!user || user.role !== 'admin') {
       await api('/api/logout', { method: 'POST' }).catch(() => {});
-      showNotice('This account is valid, but its role is not admin. No admin dashboard access was granted.');
+      showNotice('This account is valid, but it does not have the admin role.', 'error', 'loginNotice');
       return;
     }
     $('loginPassword').value = '';
-    showNotice('Admin sign-in successful.', 'success');
+    setAuthenticatedMode();
+    showNotice('Signed in successfully.', 'success');
     await loadDashboard();
   } catch (e) {
-    showNotice(e.message || 'Could not sign in.');
+    showNotice(e.message || 'Could not sign in. Check your email and password.', 'error', 'loginNotice');
   } finally {
     button.disabled = false;
-    button.textContent = 'Sign in';
+    button.textContent = 'Sign in to dashboard';
   }
 });
 $('refreshBtn').addEventListener('click', loadDashboard);
@@ -142,8 +162,9 @@ $('orderSearch').addEventListener('input', renderOrders);
 $('statusFilter').addEventListener('change', renderOrders);
 $('logoutBtn').addEventListener('click', async () => {
   try { await api('/api/logout', { method: 'POST' }); } catch (e) { console.warn(e.message); }
-  $('loginPanel').classList.remove('hidden');
-  showNotice('You have been logged out.', 'success');
-  await loadDashboard();
+  $('loginPassword').value = '';
+  setLoginMode();
+  showNotice('You have been logged out.', 'success', 'loginNotice');
 });
+setLoginMode();
 loadDashboard();

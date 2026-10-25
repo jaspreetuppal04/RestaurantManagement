@@ -23,15 +23,23 @@
         <div class="top-actions"><span id="lastUpdated" class="muted">Not refreshed yet</span><button id="refreshBtn" class="btn btn-light">↻ Refresh</button><button id="logoutBtn" class="btn btn-dark">Log out</button></div>
       </header>
 
-      <section id="loginPanel" class="login-panel">
-        <div><h2>Admin sign in</h2><p>Sign in with an existing account whose database role is <code>admin</code>.</p></div>
-        <form id="adminLoginForm" class="login-form">
-          <label>Email<input id="loginEmail" type="email" autocomplete="username" required></label>
-          <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
-          <button class="btn btn-dark" type="submit">Sign in</button>
-        </form>
+      <section id="loginPanel" class="login-screen">
+        <div class="login-card">
+          <div class="login-mark">FT</div>
+          <p class="eyebrow">THE FAT TURTLE · CAFE ADMIN</p>
+          <h2>Welcome back</h2>
+          <p class="login-intro">Sign in to manage restaurant orders and performance.</p>
+          <form id="adminLoginForm" class="login-form">
+            <label>Email address<input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="username" required></label>
+            <label>Password<input id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password" required></label>
+            <button class="btn btn-dark" type="submit">Sign in to dashboard →</button>
+          </form>
+          <p class="login-help">Administrator access only. Your account must have the <code>admin</code> database role.</p>
+          <div id="loginNotice" class="notice hidden" role="status"></div>
+        </div>
       </section>
       <div id="notice" class="notice hidden" role="status"></div>
+      <div id="dashboardContent">
 
       <section id="overview" class="section">
         <div class="section-heading"><div><h2>Overview</h2><p>Your restaurant at a glance</p></div><span class="live-pill"><i></i> LIVE DATA</span></div>
@@ -53,6 +61,7 @@
         <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Email</th><th>Mobile</th><th>Role</th></tr></thead><tbody id="customersBody"><tr><td colspan="4" class="empty">Sign in to load customers.</td></tr></tbody></table></div>
       </section>
       <footer>THE FAT TURTLE · ADMIN CONSOLE <span>Keep admin credentials private.</span></footer>
+      </div>
     </main>
   </div>
   <script src="admin.js"></script>
