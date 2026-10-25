@@ -24,7 +24,11 @@ let orders = [];
 
 function addOrder(foodName) {
 
-    foodName = foodName.trim();
+    foodName = String(foodName || "").trim();
+    if (!Object.prototype.hasOwnProperty.call(foodPrices, foodName)) {
+        console.error("Unknown menu item; not added to cart:", foodName);
+        return;
+    }
 
     const existingOrder =
         orders.find(
@@ -161,7 +165,7 @@ function updateOrders() {
             increaseButton.onclick =
                 function () {
 
-                    order.quantity++;
+                    if (order.quantity < 50) order.quantity++;
 
                     updateOrders();
 
@@ -542,22 +546,36 @@ function toRadians(degrees) {
 
 /* AUTHENTICATION: MYSQL BACKEND + SERVER SESSION */
 
-const API_BASE = `http://${window.location.hostname || "localhost"}:3000`;
+// The page should be served from XAMPP (http://localhost or http://127.0.0.1)
+// or Live Server. The API uses the same hostname on port 3000 so session cookies
+// are sent back to the same host.
+const API_HOST = (window.location.hostname === "127.0.0.1") ? "127.0.0.1" : "localhost";
+const API_BASE = `http://${API_HOST}:3000`;
 
 async function apiRequest(path, options = {}) {
-    const response = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        credentials: "include",
-        headers: {
-            ...(options.body ? { "Content-Type": "application/json" } : {}),
-            ...(options.headers || {})
-        }
-    });
+    let response;
+    try {
+        response = await fetch(`${API_BASE}${path}`, {
+            ...options,
+            credentials: "include",
+            headers: {
+                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...(options.headers || {})
+            }
+        });
+    } catch (error) {
+        console.error(`API connection failed (${path}):`, error);
+        throw new Error(`Cannot reach the restaurant backend at ${API_BASE}. Start it in VS Code with node app.js and keep the terminal open.`);
+    }
 
     let result = {};
     try { result = await response.json(); } catch (_) {}
     if (!response.ok) {
-        throw new Error(result.message || "Request failed.");
+        if (response.status === 401) {
+            localStorage.removeItem("fatTurtleLoggedIn");
+            localStorage.removeItem("fatTurtleUser");
+        }
+        throw new Error(result.message || `Request failed (${response.status}).`);
     }
     return result;
 }
@@ -817,7 +835,10 @@ async function placeOrder() {
             message.className = "text-danger";
             message.textContent = error.message;
         }
-        if (error.message.toLowerCase().includes("log in")) {
+        if (error.message.toLowerCase().includes("log in") || error.message.toLowerCase().includes("login")) {
+            showLoggedOutHeader();
+            const history = document.getElementById("orderHistoryList");
+            if (history) history.textContent = "Log in to view your saved orders.";
             const modalElement = document.getElementById("loginModal");
             if (modalElement && window.bootstrap) new bootstrap.Modal(modalElement).show();
         }
@@ -868,17 +889,20 @@ async function loadOrderHistory() {
             container.appendChild(card);
         });
     } catch (error) {
-        container.textContent = error.message;
+        if (error.message.toLowerCase().includes("log in") || error.message.toLowerCase().includes("login")) {
+            container.textContent = "Log in to view your saved orders.";
+        } else {
+            container.textContent = error.message;
+        }
     }
 }
 
 // Verify the server session every time the page opens; localStorage is not authentication.
 document.addEventListener("DOMContentLoaded", async () => {
-    await showLoggedInUser();
+    const user = await showLoggedInUser();
     const history = document.getElementById("orderHistoryList");
     if (history) {
-        const user = await apiRequest("/api/me").then(result => result.user).catch(() => null);
-        if (user) loadOrderHistory();
+        if (user) await loadOrderHistory();
         else history.textContent = "Log in to view your saved orders.";
     }
 });

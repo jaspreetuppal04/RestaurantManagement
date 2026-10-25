@@ -5,60 +5,99 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 
+// Local development: allow the XAMPP/Live Server ports used by this project.
+// Keep credentials enabled because login uses an HTTP session cookie.
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000',
-             'http://localhost:5500', 'http://127.0.0.1:5500',
-             'http://localhost:5501', 'http://127.0.0.1:5501',
-             'http://localhost:8080', 'http://127.0.0.1:8080'],
+    origin(origin, callback) {
+        // Requests without Origin (e.g. curl) are allowed for local testing.
+        if (!origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Origin is not allowed by local development CORS policy.'));
+    },
     credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 app.use(session({
     name: 'fatTurtle.sid',
-    secret: process.env.SESSION_SECRET || 'replace-this-local-development-secret',
+    secret: process.env.SESSION_SECRET || 'fat-turtle-local-dev-change-this-secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
         sameSite: 'lax',
-        secure: false, // localhost development only; use true with HTTPS in production
+        secure: false, // Local HTTP only. Use secure:true behind HTTPS in production.
         maxAge: 1000 * 60 * 60 * 8
     }
 }));
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
+    connectionLimit: 10,
     host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'fat_turtle_db'
-});
-
-connection.connect((err) => {
-    if (err) {
-        console.error('MySQL connection failed:', err.message);
-        return;
-    }
-    console.log('Connected to fat_turtle_db');
+    database: process.env.DB_NAME || 'fat_turtle_db',
+    charset: 'utf8mb4'
 });
 
 function query(sql, params = []) {
     return new Promise((resolve, reject) => {
-        connection.query(sql, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
+        pool.query(sql, params, (err, results) => err ? reject(err) : resolve(results));
+    });
+}
+
+function getConnection() {
+    return new Promise((resolve, reject) => {
+        pool.getConnection((err, connection) => err ? reject(err) : resolve(connection));
     });
 }
 
 function requireLogin(req, res, next) {
-    if (!req.session.customerId) {
+    if (!req.session || !req.session.customerId) {
         return res.status(401).json({ message: 'Please log in to continue.' });
     }
     next();
 }
+
+async function ensureOrderTables() {
+    // No foreign-key constraint is added here because existing practical databases
+    // may define customers.id as INT or BIGINT. The application still validates the customer.
+    await query(`CREATE TABLE IF NOT EXISTS orders (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        customer_id BIGINT UNSIGNED NOT NULL,
+        total_amount DECIMAL(10,2) NOT NULL,
+        status VARCHAR(30) NOT NULL DEFAULT 'Placed',
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_orders_customer_created (customer_id, created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+    await query(`CREATE TABLE IF NOT EXISTS order_items (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        order_id BIGINT UNSIGNED NOT NULL,
+        food_name VARCHAR(150) NOT NULL,
+        unit_price DECIMAL(10,2) NOT NULL,
+        quantity INT NOT NULL,
+        item_total DECIMAL(10,2) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_order_items_order (order_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+}
+
+app.get('/api/health', async (req, res) => {
+    try {
+        await query('SELECT 1 AS ok');
+        res.json({ ok: true, database: process.env.DB_NAME || 'fat_turtle_db' });
+    } catch (err) {
+        console.error('Health/database check failed:', err.message);
+        res.status(500).json({ ok: false, message: 'API is running but MySQL is unavailable.' });
+    }
+});
 
 app.post('/api/signup', async (req, res) => {
     const firstName = String(req.body.first_name || '').trim();
@@ -75,75 +114,59 @@ app.post('/api/signup', async (req, res) => {
     }
 
     try {
-        const existing = await query(
-            'SELECT id FROM customers WHERE LOWER(email) = ? LIMIT 1',
-            [email]
-        );
+        const existing = await query('SELECT id FROM customers WHERE LOWER(email) = ? LIMIT 1', [email]);
         if (existing.length) {
             return res.status(409).json({ message: 'This email is already registered. Please log in.' });
         }
-
         const passwordHash = await bcrypt.hash(password, 12);
         const result = await query(
-            `INSERT INTO customers (first_name, mobile, email, password, address)
-             VALUES (?, ?, ?, ?, ?)`,
+            'INSERT INTO customers (first_name, mobile, email, password, address) VALUES (?, ?, ?, ?, ?)',
             [firstName, mobile, email, passwordHash, address]
         );
-        res.status(201).json({
-            message: 'Account created successfully. Please log in.',
-            customerId: result.insertId
-        });
+        return res.status(201).json({ message: 'Account created successfully. Please log in.', customerId: result.insertId });
     } catch (err) {
+        console.error('Signup error:', err.code || err.message);
         if (err.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ message: 'This email is already registered. Please log in.' });
         }
-        console.error('Signup error:', err.message);
-        res.status(500).json({ message: 'Could not create the account.' });
+        return res.status(500).json({ message: 'Could not create the account. Check the customers table and backend terminal.' });
     }
 });
 
 app.post('/api/login', async (req, res) => {
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
-    }
+    if (!email || !password) return res.status(400).json({ message: 'Email and password are required.' });
 
     try {
         const rows = await query(
-            `SELECT id, first_name, mobile, email, password, address
-             FROM customers WHERE LOWER(email) = ? LIMIT 1`,
+            'SELECT id, first_name, mobile, email, password, address FROM customers WHERE LOWER(email) = ? LIMIT 1',
             [email]
         );
-        if (!rows.length) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
-        }
+        if (!rows.length) return res.status(401).json({ message: 'Invalid email or password.' });
 
         const customer = rows[0];
         let validPassword = false;
-        // The plaintext comparison is only for old practical/demo rows created before password hashing.
-        // New signups always use bcrypt hashes. Change old passwords to hashed passwords before production.
         if (String(customer.password).startsWith('$2')) {
-            validPassword = await bcrypt.compare(password, customer.password);
+            validPassword = await bcrypt.compare(password, String(customer.password));
         } else {
+            // Supports old practical/demo records that stored a plaintext password.
             validPassword = password === String(customer.password);
         }
-
-        if (!validPassword) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
-        }
+        if (!validPassword) return res.status(401).json({ message: 'Invalid email or password.' });
 
         req.session.regenerate((sessionError) => {
             if (sessionError) {
-                console.error('Session error:', sessionError);
-                return res.status(500).json({ message: 'Could not start a secure session.' });
+                console.error('Session regenerate error:', sessionError.message);
+                return res.status(500).json({ message: 'Could not start a login session.' });
             }
             req.session.customerId = customer.id;
             req.session.save((saveError) => {
                 if (saveError) {
+                    console.error('Session save error:', saveError.message);
                     return res.status(500).json({ message: 'Could not save login session.' });
                 }
-                res.json({
+                return res.json({
                     message: 'Login successful!',
                     user: {
                         id: customer.id,
@@ -156,35 +179,25 @@ app.post('/api/login', async (req, res) => {
             });
         });
     } catch (err) {
-        console.error('Login error:', err.message);
-        res.status(500).json({ message: 'Unable to log in right now.' });
+        console.error('Login error:', err.code || err.message);
+        return res.status(500).json({ message: 'Unable to log in. Check the customers table and backend terminal.' });
     }
 });
 
 app.get('/api/me', requireLogin, async (req, res) => {
     try {
         const rows = await query(
-            `SELECT id, first_name, mobile, email, address
-             FROM customers WHERE id = ? LIMIT 1`,
+            'SELECT id, first_name, mobile, email, address FROM customers WHERE id = ? LIMIT 1',
             [req.session.customerId]
         );
         if (!rows.length) {
-            req.session.destroy(() => {});
-            return res.status(401).json({ message: 'Customer account was not found. Please log in again.' });
+            return req.session.destroy(() => res.status(401).json({ message: 'Customer account was not found. Please log in again.' }));
         }
         const c = rows[0];
-        res.json({
-            user: {
-                id: c.id,
-                firstName: c.first_name,
-                mobile: c.mobile,
-                email: c.email,
-                address: c.address
-            }
-        });
+        return res.json({ user: { id: c.id, firstName: c.first_name, mobile: c.mobile, email: c.email, address: c.address } });
     } catch (err) {
-        console.error('Account lookup error:', err.message);
-        res.status(500).json({ message: 'Could not load your account.' });
+        console.error('Account lookup error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load your account.' });
     }
 });
 
@@ -193,11 +206,10 @@ app.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) return res.status(500).json({ message: 'Could not log out.' });
         res.clearCookie('fatTurtle.sid', { httpOnly: true, sameSite: 'lax', secure: false });
-        res.json({ message: 'Logged out successfully.' });
+        return res.json({ message: 'Logged out successfully.' });
     });
 });
 
-// Authoritative menu prices are set on the server; never trust prices sent by the browser.
 const MENU_PRICES = {
     'Couscous Chickpea Salad': 249,
     'Fattoush Salad': 229,
@@ -220,84 +232,56 @@ app.post('/api/orders', requireLogin, async (req, res) => {
 
     const cleanItems = [];
     for (const item of items) {
-        const name = String(item.name || '').trim();
-        const quantity = Number(item.quantity);
+        const name = String((item && item.name) || '').trim();
+        const quantity = Number(item && item.quantity);
         if (!Object.prototype.hasOwnProperty.call(MENU_PRICES, name) ||
             !Number.isInteger(quantity) || quantity < 1 || quantity > 50) {
-            return res.status(400).json({ message: 'Your cart contains an invalid item or quantity.' });
+            return res.status(400).json({ message: `Invalid item or quantity in cart: ${name || 'unknown item'}.` });
         }
-        cleanItems.push({
-            name,
-            quantity,
-            price: MENU_PRICES[name],
-            total: MENU_PRICES[name] * quantity
-        });
+        cleanItems.push({ name, quantity, price: MENU_PRICES[name], total: MENU_PRICES[name] * quantity });
     }
 
     const total = cleanItems.reduce((sum, item) => sum + item.total, 0);
-    connection.beginTransaction(async (transactionError) => {
-        if (transactionError) {
-            console.error(transactionError);
-            return res.status(500).json({ message: 'Could not start the order transaction.' });
+    let db;
+    try {
+        db = await getConnection();
+        await new Promise((resolve, reject) => db.beginTransaction(err => err ? reject(err) : resolve()));
+        const orderResult = await new Promise((resolve, reject) => {
+            db.query('INSERT INTO orders (customer_id, total_amount, status) VALUES (?, ?, ?)',
+                [req.session.customerId, total, 'Placed'], (err, result) => err ? reject(err) : resolve(result));
+        });
+        const values = cleanItems.map(item => [orderResult.insertId, item.name, item.price, item.quantity, item.total]);
+        await new Promise((resolve, reject) => {
+            db.query('INSERT INTO order_items (order_id, food_name, unit_price, quantity, item_total) VALUES ?',
+                [values], err => err ? reject(err) : resolve());
+        });
+        await new Promise((resolve, reject) => db.commit(err => err ? reject(err) : resolve()));
+        return res.status(201).json({ message: 'Your order has been placed and saved.', orderId: orderResult.insertId, totalAmount: total });
+    } catch (err) {
+        if (db) {
+            try { await new Promise(resolve => db.rollback(() => resolve())); } catch (_) {}
         }
-        connection.query(
-            'INSERT INTO orders (customer_id, total_amount, status) VALUES (?, ?, ?)',
-            [req.session.customerId, total, 'Placed'],
-            (orderError, orderResult) => {
-                if (orderError) {
-                    return connection.rollback(() => {
-                        console.error(orderError);
-                        res.status(500).json({ message: 'Could not save your order.' });
-                    });
-                }
-                const orderId = orderResult.insertId;
-                const values = cleanItems.map(item => [
-                    orderId, item.name, item.price, item.quantity, item.total
-                ]);
-                connection.query(
-                    'INSERT INTO order_items (order_id, food_name, unit_price, quantity, item_total) VALUES ?',
-                    [values],
-                    (itemsError) => {
-                        if (itemsError) {
-                            return connection.rollback(() => {
-                                console.error(itemsError);
-                                res.status(500).json({ message: 'Could not save order items.' });
-                            });
-                        }
-                        connection.commit((commitError) => {
-                            if (commitError) {
-                                return connection.rollback(() => {
-                                    console.error(commitError);
-                                    res.status(500).json({ message: 'Could not complete your order.' });
-                                });
-                            }
-                            res.status(201).json({
-                                message: 'Your order has been placed and saved.',
-                                orderId,
-                                totalAmount: total
-                            });
-                        });
-                    }
-                );
-            }
-        );
-    });
+        console.error('Place order error:', err.code || err.message);
+        if (err.code === 'ER_NO_SUCH_TABLE') {
+            return res.status(500).json({ message: 'Order tables are missing. Restart the backend so it can create them.' });
+        }
+        return res.status(500).json({ message: 'Could not save your order. Check the backend terminal for the database error.' });
+    } finally {
+        if (db) db.release();
+    }
 });
 
 app.get('/api/orders', requireLogin, async (req, res) => {
     try {
         const orders = await query(
-            `SELECT id, total_amount, status, created_at
-             FROM orders WHERE customer_id = ? ORDER BY created_at DESC, id DESC`,
+            'SELECT id, total_amount, status, created_at FROM orders WHERE customer_id = ? ORDER BY created_at DESC, id DESC',
             [req.session.customerId]
         );
         if (!orders.length) return res.json({ orders: [] });
-
         const ids = orders.map(order => order.id);
         const placeholders = ids.map(() => '?').join(',');
         const items = await query(
-            `SELECT order_id, food_name, unit_price, quantity, item_total
-             FROM order_items WHERE order_id IN (${placeholders}) ORDER BY id`,
+            `SELECT order_id, food_name, unit_price, quantity, item_total FROM order_items WHERE order_id IN (${placeholders}) ORDER BY id`,
             ids
         );
         const grouped = {};
@@ -305,26 +289,37 @@ app.get('/api/orders', requireLogin, async (req, res) => {
             if (!grouped[item.order_id]) grouped[item.order_id] = [];
             grouped[item.order_id].push(item);
         }
-        res.json({
-            orders: orders.map(order => ({
-                id: order.id,
-                totalAmount: Number(order.total_amount),
-                status: order.status,
-                createdAt: order.created_at,
-                items: grouped[order.id] || []
-            }))
-        });
+        return res.json({ orders: orders.map(order => ({
+            id: order.id,
+            totalAmount: Number(order.total_amount),
+            status: order.status,
+            createdAt: order.created_at,
+            items: grouped[order.id] || []
+        })) });
     } catch (err) {
-        console.error('Order history error:', err.message);
-        res.status(500).json({ message: 'Could not load your orders.' });
+        console.error('Order history error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load your orders. Check that the orders and order_items tables exist.' });
     }
 });
 
-app.get('/', (req, res) => {
-    res.send('The Fat Turtle API is running. Open the website through your local web server.');
-});
+app.get('/', (req, res) => res.send('The Fat Turtle API is running. Open the website through your local web server.'));
 
-app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
-});
+async function startServer() {
+    try {
+        await new Promise((resolve, reject) => pool.getConnection((err, connection) => {
+            if (err) return reject(err);
+            connection.release();
+            resolve();
+        }));
+        console.log(`Connected to MySQL database: ${process.env.DB_NAME || 'fat_turtle_db'}`);
+        await ensureOrderTables();
+        console.log('Checked/created orders and order_items tables.');
+        app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
+    } catch (err) {
+        console.error('Could not start backend / connect to MySQL:', err.code || err.message);
+        console.error('Check that MySQL is running and fat_turtle_db and customers table exist.');
+        process.exitCode = 1;
+    }
+}
 
+startServer();
