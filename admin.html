@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Fat Turtle | Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">FT</span><div><strong>The Fat Turtle</strong><small>CAFE · ADMIN</small></div></div>
+      <nav>
+        <a class="nav-link active" href="#overview">▦ <span>Overview</span></a>
+        <a class="nav-link" href="#orders">▤ <span>Orders</span></a>
+        <a class="nav-link" href="#customers">♙ <span>Customers</span></a>
+      </nav>
+      <div class="sidebar-bottom"><span class="online-dot"></span> Connected to local API</div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">RESTAURANT MANAGEMENT</p><h1>Admin dashboard</h1><p class="subheading">Monitor orders and restaurant performance.</p></div>
+        <div class="top-actions"><span id="lastUpdated" class="muted">Not refreshed yet</span><button id="refreshBtn" class="btn btn-light">↻ Refresh</button><button id="logoutBtn" class="btn btn-dark">Log out</button></div>
+      </header>
+
+      <section id="loginPanel" class="login-panel">
+        <div><h2>Admin sign in</h2><p>Sign in with an existing account whose database role is <code>admin</code>.</p></div>
+        <form id="adminLoginForm" class="login-form">
+          <label>Email<input id="loginEmail" type="email" autocomplete="username" required></label>
+          <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+          <button class="btn btn-dark" type="submit">Sign in</button>
+        </form>
+      </section>
+      <div id="notice" class="notice hidden" role="status"></div>
+
+      <section id="overview" class="section">
+        <div class="section-heading"><div><h2>Overview</h2><p>Your restaurant at a glance</p></div><span class="live-pill"><i></i> LIVE DATA</span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total orders</span><span class="stat-icon">▤</span></div><strong id="totalOrders">—</strong><small>Orders saved in database</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Total revenue</span><span class="stat-icon">₹</span></div><strong id="totalRevenue">—</strong><small>Sum of saved order totals</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Customers</span><span class="stat-icon">♙</span></div><strong id="totalCustomers">—</strong><small>Registered accounts</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Pending orders</span><span class="stat-icon">◷</span></div><strong id="pendingOrders">—</strong><small>Not completed or cancelled</small></article>
+        </div>
+      </section>
+
+      <section id="orders" class="section panel">
+        <div class="section-heading"><div><h2>Recent orders</h2><p>Orders across all customers</p></div><div class="filters"><input id="orderSearch" type="search" placeholder="Search order or customer…" aria-label="Search orders"><select id="statusFilter" aria-label="Filter by status"><option value="">All statuses</option><option>Placed</option><option>Preparing</option><option>Ready</option><option>Completed</option><option>Cancelled</option></select></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody id="ordersBody"><tr><td colspan="6" class="empty">Sign in to load orders.</td></tr></tbody></table></div>
+        <p class="table-note">This dashboard displays order status. Status changes are not enabled in this version.</p>
+      </section>
+      <section id="customers" class="section panel">
+        <div class="section-heading"><div><h2>Customers</h2><p>Registered accounts (passwords are never displayed)</p></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Email</th><th>Mobile</th><th>Role</th></tr></thead><tbody id="customersBody"><tr><td colspan="4" class="empty">Sign in to load customers.</td></tr></tbody></table></div>
+      </section>
+      <footer>THE FAT TURTLE · ADMIN CONSOLE <span>Keep admin credentials private.</span></footer>
+    </main>
+  </div>
+  <script src="admin.js"></script>
+</body>
+</html>

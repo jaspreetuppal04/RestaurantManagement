@@ -63,6 +63,40 @@ function requireLogin(req, res, next) {
     next();
 }
 
+// Check the current role from MySQL on every admin request. Never trust a role
+// sent by the browser or stored only in client-side JavaScript.
+async function requireAdmin(req, res, next) {
+    if (!req.session || !req.session.customerId) {
+        return res.status(401).json({ message: 'Please log in to continue.' });
+    }
+
+    try {
+        const rows = await query(
+            'SELECT role FROM customers WHERE id = ? LIMIT 1',
+            [req.session.customerId]
+        );
+        if (!rows.length) {
+            return res.status(401).json({ message: 'Account not found. Please log in again.' });
+        }
+        if (rows[0].role !== 'admin') {
+            return res.status(403).json({ message: 'Access denied. Admin privileges are required.' });
+        }
+        req.userRole = rows[0].role;
+        next();
+    } catch (err) {
+        console.error('Role verification error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not verify account permissions.' });
+    }
+}
+
+async function ensureRoleColumn() {
+    const columns = await query("SHOW COLUMNS FROM customers LIKE 'role'");
+    if (!columns.length) {
+        await query("ALTER TABLE customers ADD COLUMN role ENUM('customer', 'admin') NOT NULL DEFAULT 'customer'");
+        console.log("Added customers.role column with default 'customer'.");
+    }
+}
+
 async function ensureOrderTables() {
     // No foreign-key constraint is added here because existing practical databases
     // may define customers.id as INT or BIGINT. The application still validates the customer.
@@ -120,8 +154,8 @@ app.post('/api/signup', async (req, res) => {
         }
         const passwordHash = await bcrypt.hash(password, 12);
         const result = await query(
-            'INSERT INTO customers (first_name, mobile, email, password, address) VALUES (?, ?, ?, ?, ?)',
-            [firstName, mobile, email, passwordHash, address]
+            'INSERT INTO customers (first_name, mobile, email, password, address, role) VALUES (?, ?, ?, ?, ?, ?)',
+            [firstName, mobile, email, passwordHash, address, 'customer']
         );
         return res.status(201).json({ message: 'Account created successfully. Please log in.', customerId: result.insertId });
     } catch (err) {
@@ -140,7 +174,7 @@ app.post('/api/login', async (req, res) => {
 
     try {
         const rows = await query(
-            'SELECT id, first_name, mobile, email, password, address FROM customers WHERE LOWER(email) = ? LIMIT 1',
+            'SELECT id, first_name, mobile, email, password, address, role FROM customers WHERE LOWER(email) = ? LIMIT 1',
             [email]
         );
         if (!rows.length) return res.status(401).json({ message: 'Invalid email or password.' });
@@ -155,12 +189,19 @@ app.post('/api/login', async (req, res) => {
         }
         if (!validPassword) return res.status(401).json({ message: 'Invalid email or password.' });
 
+        // Upgrade older practical/demo plaintext passwords to bcrypt after a successful login.
+        if (!String(customer.password).startsWith('$2')) {
+            const upgradedHash = await bcrypt.hash(password, 12);
+            await query('UPDATE customers SET password = ? WHERE id = ?', [upgradedHash, customer.id]);
+        }
+
         req.session.regenerate((sessionError) => {
             if (sessionError) {
                 console.error('Session regenerate error:', sessionError.message);
                 return res.status(500).json({ message: 'Could not start a login session.' });
             }
             req.session.customerId = customer.id;
+            req.session.role = customer.role || 'customer';
             req.session.save((saveError) => {
                 if (saveError) {
                     console.error('Session save error:', saveError.message);
@@ -173,7 +214,8 @@ app.post('/api/login', async (req, res) => {
                         firstName: customer.first_name,
                         email: customer.email,
                         mobile: customer.mobile,
-                        address: customer.address
+                        address: customer.address,
+                        role: customer.role || 'customer'
                     }
                 });
             });
@@ -187,14 +229,14 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/me', requireLogin, async (req, res) => {
     try {
         const rows = await query(
-            'SELECT id, first_name, mobile, email, address FROM customers WHERE id = ? LIMIT 1',
+            'SELECT id, first_name, mobile, email, address, role FROM customers WHERE id = ? LIMIT 1',
             [req.session.customerId]
         );
         if (!rows.length) {
             return req.session.destroy(() => res.status(401).json({ message: 'Customer account was not found. Please log in again.' }));
         }
         const c = rows[0];
-        return res.json({ user: { id: c.id, firstName: c.first_name, mobile: c.mobile, email: c.email, address: c.address } });
+        return res.json({ user: { id: c.id, firstName: c.first_name, mobile: c.mobile, email: c.email, address: c.address, role: c.role || 'customer' } });
     } catch (err) {
         console.error('Account lookup error:', err.code || err.message);
         return res.status(500).json({ message: 'Could not load your account.' });
@@ -302,6 +344,62 @@ app.get('/api/orders', requireLogin, async (req, res) => {
     }
 });
 
+// Practical 9: protected admin-only routes for demonstrating role-based access.
+app.get('/api/admin/dashboard', requireLogin, requireAdmin, async (req, res) => {
+    try {
+        const rows = await query(
+            `SELECT
+                (SELECT COUNT(*) FROM customers) AS totalCustomers,
+                (SELECT COUNT(*) FROM orders) AS totalOrders,
+                (SELECT COALESCE(SUM(total_amount), 0) FROM orders) AS totalRevenue,
+                (SELECT COUNT(*) FROM orders WHERE LOWER(status) NOT IN ('completed', 'cancelled')) AS pendingOrders`
+        );
+        const stats = {
+            totalCustomers: Number(rows[0].totalCustomers),
+            totalOrders: Number(rows[0].totalOrders),
+            totalRevenue: Number(rows[0].totalRevenue),
+            pendingOrders: Number(rows[0].pendingOrders)
+        };
+        return res.json({
+            message: 'Admin access granted.',
+            role: req.userRole,
+            ...stats,
+            stats
+        });
+    } catch (err) {
+        console.error('Admin dashboard error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load the admin dashboard.' });
+    }
+});
+
+app.get('/api/admin/orders', requireLogin, requireAdmin, async (req, res) => {
+    try {
+        const orders = await query(
+            `SELECT o.id, o.customer_id, c.first_name, c.email,
+                    o.total_amount, o.status, o.created_at
+             FROM orders o
+             LEFT JOIN customers c ON c.id = o.customer_id
+             ORDER BY o.created_at DESC, o.id DESC`
+        );
+        return res.json({ orders });
+    } catch (err) {
+        console.error('Admin orders error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load all orders.' });
+    }
+});
+
+app.get('/api/admin/customers', requireLogin, requireAdmin, async (req, res) => {
+    try {
+        const customers = await query(
+            'SELECT id, first_name, mobile, email, role FROM customers ORDER BY id DESC'
+        );
+        return res.json({ customers });
+    } catch (err) {
+        console.error('Admin customers error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load customers.' });
+    }
+});
+
 app.get('/', (req, res) => res.send('The Fat Turtle API is running. Open the website through your local web server.'));
 
 async function startServer() {
@@ -312,6 +410,7 @@ async function startServer() {
             resolve();
         }));
         console.log(`Connected to MySQL database: ${process.env.DB_NAME || 'fat_turtle_db'}`);
+        await ensureRoleColumn();
         await ensureOrderTables();
         console.log('Checked/created orders and order_items tables.');
         app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
