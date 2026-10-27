@@ -123,6 +123,22 @@ async function ensureOrderTables() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
 }
 
+
+async function ensureReviewsTable() {
+    await query(`CREATE TABLE IF NOT EXISTS reviews (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        customer_id BIGINT UNSIGNED NULL,
+        name VARCHAR(100) NOT NULL,
+        phone VARCHAR(25) NOT NULL,
+        rating TINYINT UNSIGNED NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_reviews_created (created_at),
+        INDEX idx_reviews_customer (customer_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+}
+
 app.get('/api/health', async (req, res) => {
     try {
         await query('SELECT 1 AS ok');
@@ -400,6 +416,60 @@ app.get('/api/admin/customers', requireLogin, requireAdmin, async (req, res) => 
     }
 });
 
+
+// Save customer feedback/reviews in MySQL. Login is optional for submitting feedback;
+// when logged in, the review is associated with that customer account.
+app.post('/api/reviews', async (req, res) => {
+    const name = String(req.body.name || '').trim();
+    const phone = String(req.body.phone || '').trim();
+    const rating = Number(req.body.rating);
+    const message = String(req.body.message || '').trim();
+    const customerId = req.session && req.session.customerId
+        ? Number(req.session.customerId)
+        : null;
+
+    if (!name || !phone || !message || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return res.status(400).json({
+            message: 'Please provide your name, phone number, a rating from 1 to 5, and feedback.'
+        });
+    }
+    if (name.length > 100 || phone.length > 25 || message.length > 3000) {
+        return res.status(400).json({ message: 'Please shorten the name, phone number, or feedback.' });
+    }
+
+    try {
+        const result = await query(
+            `INSERT INTO reviews (customer_id, name, phone, rating, message)
+             VALUES (?, ?, ?, ?, ?)`,
+            [customerId, name, phone, rating, message]
+        );
+        return res.status(201).json({
+            message: 'Thank you! Your feedback has been saved.',
+            reviewId: result.insertId
+        });
+    } catch (err) {
+        console.error('Save review error:', err.code || err.message);
+        return res.status(500).json({
+            message: 'Could not save your feedback. Please check the backend terminal.'
+        });
+    }
+});
+
+// Admin-only review listing for moderation and project demonstration.
+app.get('/api/admin/reviews', requireLogin, requireAdmin, async (req, res) => {
+    try {
+        const reviews = await query(
+            `SELECT id, customer_id, name, phone, rating, message, created_at
+             FROM reviews
+             ORDER BY created_at DESC, id DESC`
+        );
+        return res.json({ reviews });
+    } catch (err) {
+        console.error('Admin reviews error:', err.code || err.message);
+        return res.status(500).json({ message: 'Could not load reviews.' });
+    }
+});
+
 app.get('/', (req, res) => res.send('The Fat Turtle API is running. Open the website through your local web server.'));
 
 async function startServer() {
@@ -412,7 +482,8 @@ async function startServer() {
         console.log(`Connected to MySQL database: ${process.env.DB_NAME || 'fat_turtle_db'}`);
         await ensureRoleColumn();
         await ensureOrderTables();
-        console.log('Checked/created orders and order_items tables.');
+        await ensureReviewsTable();
+        console.log('Checked/created orders, order_items, and reviews tables.');
         app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));
     } catch (err) {
         console.error('Could not start backend / connect to MySQL:', err.code || err.message);

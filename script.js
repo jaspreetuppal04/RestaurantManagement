@@ -907,75 +907,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* PRACTICAL-6: FEEDBACK FORM + LOCAL STORAGE*/
+/* PRACTICAL-6: FEEDBACK FORM + MYSQL DATABASE */
 
-const feedbackForm =
-    document.getElementById("feedbackForm");
+const feedbackForm = document.getElementById("feedbackForm");
 
 if (feedbackForm) {
+    feedbackForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    feedbackForm.addEventListener(
-        "submit",
-        function (event) {
+        const name = document.getElementById("feedbackName").value.trim();
+        const phone = document.getElementById("feedbackPhone").value.trim();
+        const rating = document.getElementById("feedbackRating").value;
+        const message = document.getElementById("feedbackMessage").value.trim();
+        const submitButton = feedbackForm.querySelector('button[type="submit"]');
 
-            event.preventDefault();
-
-            const name =
-                document.getElementById("feedbackName").value.trim();
-
-            const phone =
-                document.getElementById("feedbackPhone").value.trim();
-
-            const rating =
-                document.getElementById("feedbackRating").value;
-
-            const message =
-                document.getElementById("feedbackMessage").value.trim();
-
-
-            /* Get existing feedback */
-
-            const existingFeedback =
-                JSON.parse(
-                    localStorage.getItem("restaurantFeedback")
-                ) || [];
-
-
-            /* Create new feedback */
-
-            const feedback = {
-
-                name: name,
-                phone: phone,
-                rating: rating,
-                message: message
-
-            };
-
-
-            /* Add new feedback */
-
-            existingFeedback.push(feedback);
-
-
-            /* Save feedback in Local Storage */
-
-            localStorage.setItem(
-                "restaurantFeedback",
-                JSON.stringify(existingFeedback)
-            );
-
-
-            alert("Thank you for your feedback!");
-
-
-            /* Clear form */
-
-            feedbackForm.reset();
-
+        let status = document.getElementById("feedbackStatus");
+        if (!status) {
+            status = document.createElement("p");
+            status.id = "feedbackStatus";
+            status.setAttribute("role", "status");
+            status.setAttribute("aria-live", "polite");
+            status.className = "mt-3 text-sm";
+            feedbackForm.appendChild(status);
         }
-    );
 
+        status.className = "mt-3 text-sm";
+        status.textContent = "Saving your feedback...";
+        if (submitButton) submitButton.disabled = true;
+
+        try {
+            const result = await apiRequest("/api/reviews", {
+                method: "POST",
+                body: JSON.stringify({ name, phone, rating, message })
+            });
+
+            status.className = "mt-3 text-sm text-green-800";
+            status.textContent = result.message || "Thank you! Your feedback has been saved.";
+            feedbackForm.reset();
+        } catch (error) {
+            console.error("Feedback submission error:", error);
+            status.className = "mt-3 text-sm text-red-700";
+            status.textContent = error.message || "Could not save your feedback. Please try again.";
+        } finally {
+            if (submitButton) submitButton.disabled = false;
+        }
+    });
 }
 
 // PRACTICAL-7: VUE CUSTOM DIRECTIVES
