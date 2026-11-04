@@ -258,7 +258,7 @@ function updateOrders() {
 }
 
 
-/* PRACTICAL-4: DRAG AND DROP API */
+/* DRAG AND DROP API */
 
 
 /* Allow dropping */
@@ -313,9 +313,7 @@ function drop(event) {
 }
 
 
-/* =====================================================
-   PRACTICAL: GEOLOCATION API
-   ===================================================== */
+/*  GEOLOCATION API */
 
 
 /* DEFAULT CAFE LOCATION */
@@ -907,7 +905,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* PRACTICAL-6: FEEDBACK FORM + MYSQL DATABASE */
+/* FEEDBACK FORM + MYSQL DATABASE */
 
 const feedbackForm = document.getElementById("feedbackForm");
 
@@ -954,7 +952,7 @@ if (feedbackForm) {
     });
 }
 
-// PRACTICAL-7: VUE CUSTOM DIRECTIVES
+// VUE CUSTOM DIRECTIVES
 
 const { createApp } = Vue;
 
@@ -1048,6 +1046,6 @@ app.directive('list', {
     }
 });
 
-// Mount Vue to the Practical-7 area
+// Mount Vue to the area
 
-app.mount('#practical7');
+app.mount('#vue');

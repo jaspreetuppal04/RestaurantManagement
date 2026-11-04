@@ -200,12 +200,12 @@ app.post('/api/login', async (req, res) => {
         if (String(customer.password).startsWith('$2')) {
             validPassword = await bcrypt.compare(password, String(customer.password));
         } else {
-            // Supports old practical/demo records that stored a plaintext password.
+            // Supports old demo records that stored a plaintext password.
             validPassword = password === String(customer.password);
         }
         if (!validPassword) return res.status(401).json({ message: 'Invalid email or password.' });
 
-        // Upgrade older practical/demo plaintext passwords to bcrypt after a successful login.
+        // Upgrade older demo plaintext passwords to bcrypt after a successful login.
         if (!String(customer.password).startsWith('$2')) {
             const upgradedHash = await bcrypt.hash(password, 12);
             await query('UPDATE customers SET password = ? WHERE id = ?', [upgradedHash, customer.id]);
